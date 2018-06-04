@@ -13,3 +13,6 @@ Deamon is responsible for minting correct amount of tokens on the target blockch
 Origin blockchain transaction hashes are stored to maintain exchange history for verification purposes and recoverability.
 
 Currently supported: NEO and ETH.
+
+### Running tests
+`yarn test`

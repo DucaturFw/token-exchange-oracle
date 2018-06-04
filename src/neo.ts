@@ -1,4 +1,6 @@
 import agent from "superagent"
+import { disassemble, IEntry } from "./neo-disassemble"
+import { u as neon_u } from "@cityofzion/neon-js"
 
 export let NEO_API_URL = `http://18.206.212.253:4000`
 export let NEO_CONTRACT_ADDR = ``
@@ -14,6 +16,70 @@ function fakeContractData()
 		method: "exchange",
 		params: [from, tokenAmount, blockchainName, receiver]
 	}
+}
+export function parseExchangeCall(script: string)
+{
+	let call = parseContractCall(script)
+	if (!call)
+		return undefined
+	if (call.method != "exchange")
+		return undefined
+	if (call.params.length != 4)
+		return undefined
+	
+	let juxt = (...funcs: ((a:string) => any)[]) => (...args: any[]) => args.map((x, idx) => funcs[idx](x))
+	let hex = (x: string) => neon_u.hexstring2str(x)
+	let int = (x: string) => neon_u.Fixed8.fromHex(x)
+	let exchArgs = juxt(hex, int, hex, hex)
+	return {
+		method: call.method,
+		params: exchArgs(call.params)
+	}
+}
+export function parseContractCall(script: string)
+{
+	let asm = disassemble(script)
+	let e = asm.pop()
+	if (!e)
+		return undefined
+	if (e.name != "APPCALL")
+		return undefined
+	
+	let methodEntry = asm.pop()
+	if (!methodEntry || !methodEntry.name.startsWith("PUSHBYTES") || !methodEntry.hex)
+		return undefined
+	
+	let result = {
+		method: neon_u.hexstring2str(methodEntry.hex),
+		params: [] as string[]
+	}
+
+	e = asm.pop()
+
+
+	if (!e || !e.name.startsWith("PACK"))
+		return result
+	
+	let argsLenEntry = asm.pop()
+	if (!argsLenEntry || !argsLenEntry.int)
+		return result
+	
+	while (asm.length)
+	{
+		e = asm.pop()
+		if (!e)
+			break
+		
+		if (!e.name.startsWith("PUSHBYTES"))
+			break
+		
+		if (!e.hex)
+			break
+		
+		result.params.push(e.hex)
+	}
+
+	return result
 }
 
 export function getNeoTransfers(callback: (err: any, transfers: ICrossExchangeTransfer[] | undefined) => void)

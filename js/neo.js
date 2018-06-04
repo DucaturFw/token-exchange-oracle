@@ -4,6 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var superagent_1 = __importDefault(require("superagent"));
+var neo_disassemble_1 = require("./neo-disassemble");
+var neon_js_1 = require("@cityofzion/neon-js");
 exports.NEO_API_URL = "http://18.206.212.253:4000";
 exports.NEO_CONTRACT_ADDR = "";
 function fakeContractData() {
@@ -17,6 +19,69 @@ function fakeContractData() {
         params: [from, tokenAmount, blockchainName, receiver]
     };
 }
+function parseExchangeCall(script) {
+    var call = parseContractCall(script);
+    if (!call)
+        return undefined;
+    if (call.method != "exchange")
+        return undefined;
+    if (call.params.length != 4)
+        return undefined;
+    var juxt = function () {
+        var funcs = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            funcs[_i] = arguments[_i];
+        }
+        return function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            return args.map(function (x, idx) { return funcs[idx](x); });
+        };
+    };
+    var hex = function (x) { return neon_js_1.u.hexstring2str(x); };
+    var int = function (x) { return neon_js_1.u.Fixed8.fromHex(x); };
+    var exchArgs = juxt(hex, int, hex, hex);
+    return {
+        method: call.method,
+        params: exchArgs(call.params)
+    };
+}
+exports.parseExchangeCall = parseExchangeCall;
+function parseContractCall(script) {
+    var asm = neo_disassemble_1.disassemble(script);
+    var e = asm.pop();
+    if (!e)
+        return undefined;
+    if (e.name != "APPCALL")
+        return undefined;
+    var methodEntry = asm.pop();
+    if (!methodEntry || !methodEntry.name.startsWith("PUSHBYTES") || !methodEntry.hex)
+        return undefined;
+    var result = {
+        method: neon_js_1.u.hexstring2str(methodEntry.hex),
+        params: []
+    };
+    e = asm.pop();
+    if (!e || !e.name.startsWith("PACK"))
+        return result;
+    var argsLenEntry = asm.pop();
+    if (!argsLenEntry || !argsLenEntry.int)
+        return result;
+    while (asm.length) {
+        e = asm.pop();
+        if (!e)
+            break;
+        if (!e.name.startsWith("PUSHBYTES"))
+            break;
+        if (!e.hex)
+            break;
+        result.params.push(e.hex);
+    }
+    return result;
+}
+exports.parseContractCall = parseContractCall;
 function getNeoTransfers(callback) {
     function parseContract(contract) {
         return fakeContractData();
