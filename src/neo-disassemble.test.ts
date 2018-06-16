@@ -42,7 +42,41 @@ test('parse incorrect exchange contract call', () =>
 	let m = parseExchangeCall(tx)
 	expect(m).toBeUndefined()
 })
+let NORM_TX = "03307830034554485a224151764273374e4472783937716a5031547a64547864436e636847616b38626a64740865786368616e67656759b6f25c66b8229875bee6131363114f2c32668d"
+// NORM_TX = "40e9427a814f5b9a3f56f68e1e29be58a79cd84aa7c1ac948556510a63fef1ea11401834efce3f2ba8b4571eb91baf909e06b64a1812420e8ef2bd3cf160a31d39"
+test('parse exchange disassemble', () =>
+{
+	let tx = NORM_TX
+	let c = disassemble(tx)
+	expect(c).toBeDefined()
+	expect(c).toHaveLength(6)
+	
+	expect(c[5].name).toEqual("APPCALL")
+	
+	expect(c[4].name).toEqual(`PUSHBYTES8`)
+	expect(c[4].hex).toEqual(`65786368616e6765`)
+})
 test('parse exchange contract call', () =>
 {
+	let txScript = NORM_TX
+	let c = parseContractCall(txScript)
+	expect(c).toBeDefined()
 
+	if (!c)
+		return
+	
+	expect(c.method).toEqual("exchange")
+	expect(c.params).toHaveLength(4)
+
+	let m = parseExchangeCall(txScript)
+	expect(m).toBeDefined()
+	if (!m)
+		return
+	
+	expect(m.method).toEqual("exchange")
+	expect(m.params).toHaveLength(4)
+	expect(m.params[0]).toEqual("AQvBs7NDrx97qjP1TzdTxdCnchGak8bjdt")
+	expect(m.params[1]).toEqual(10)
+	expect(m.params[2]).toEqual("ETH")
+	expect(m.params[3]).toEqual("0x0")
 })

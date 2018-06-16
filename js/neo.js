@@ -27,6 +27,7 @@ function parseExchangeCall(script) {
         return undefined;
     if (call.params.length != 4)
         return undefined;
+    // console.log(call)
     var juxt = function () {
         var funcs = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -41,11 +42,12 @@ function parseExchangeCall(script) {
         };
     };
     var hex = function (x) { return neon_js_1.u.hexstring2str(x); };
-    var int = function (x) { return neon_js_1.u.Fixed8.fromHex(x); };
+    // let int = (x: string) => neon_u.Fixed8.fromHex(x)
+    var int = function (x) { return parseInt(x, 16); };
     var exchArgs = juxt(hex, int, hex, hex);
     return {
         method: call.method,
-        params: exchArgs(call.params)
+        params: exchArgs.apply(null, call.params)
     };
 }
 exports.parseExchangeCall = parseExchangeCall;
@@ -63,18 +65,25 @@ function parseContractCall(script) {
         method: neon_js_1.u.hexstring2str(methodEntry.hex),
         params: []
     };
-    e = asm.pop();
-    if (!e || !e.name.startsWith("PACK"))
-        return result;
-    var argsLenEntry = asm.pop();
-    if (!argsLenEntry || !argsLenEntry.int)
-        return result;
+    // e = asm.pop()
+    e = asm[asm.length - 1];
+    if (e && e.name.startsWith("PACK")) {
+        asm.pop(); // PACK
+        e = asm.pop(); // length
+        // console.log(e)
+        // console.log(asm)
+        if (!e || !e.name.startsWith("PUSH") || (e.int != asm.length))
+            return undefined;
+    }
+    // let argsLenEntry = asm.pop()
+    // if (!argsLenEntry || !argsLenEntry.int)
+    // 	return result
     while (asm.length) {
         e = asm.pop();
         if (!e)
             break;
-        if (!e.name.startsWith("PUSHBYTES"))
-            break;
+        // if (!e.name.startsWith("PUSHBYTES"))
+        // 	break
         if (!e.hex)
             break;
         result.params.push(e.hex);

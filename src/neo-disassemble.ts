@@ -66,7 +66,8 @@ export function disassemble(script: string)
 		else
 		if ((opcode >= OpCode.PUSH1 && opcode <= OpCode.PUSH16) || (opcode == OpCode.PUSH0))
 		{
-			entry.int = opcode
+			entry.int = opcode && (opcode - OpCode.PUSH1 + 1)
+			entry.data = new Buffer([entry.int])
 		}
 		else
 		switch (opcode)

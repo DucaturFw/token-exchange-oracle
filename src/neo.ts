@@ -27,13 +27,16 @@ export function parseExchangeCall(script: string)
 	if (call.params.length != 4)
 		return undefined
 	
+	// console.log(call)
+	
 	let juxt = (...funcs: ((a:string) => any)[]) => (...args: any[]) => args.map((x, idx) => funcs[idx](x))
 	let hex = (x: string) => neon_u.hexstring2str(x)
-	let int = (x: string) => neon_u.Fixed8.fromHex(x)
+	// let int = (x: string) => neon_u.Fixed8.fromHex(x)
+	let int = (x: string) => parseInt(x, 16)
 	let exchArgs = juxt(hex, int, hex, hex)
 	return {
 		method: call.method,
-		params: exchArgs(call.params)
+		params: exchArgs.apply(null, call.params)
 	}
 }
 export function parseContractCall(script: string)
@@ -54,15 +57,24 @@ export function parseContractCall(script: string)
 		params: [] as string[]
 	}
 
-	e = asm.pop()
+	// e = asm.pop()
+
+	e = asm[asm.length - 1]
 
 
-	if (!e || !e.name.startsWith("PACK"))
-		return result
+	if (e && e.name.startsWith("PACK"))
+	{
+		asm.pop() // PACK
+		e = asm.pop() // length
+		// console.log(e)
+		// console.log(asm)
+		if (!e || !e.name.startsWith("PUSH") || (e.int != asm.length))
+			return undefined
+	}
 	
-	let argsLenEntry = asm.pop()
-	if (!argsLenEntry || !argsLenEntry.int)
-		return result
+	// let argsLenEntry = asm.pop()
+	// if (!argsLenEntry || !argsLenEntry.int)
+	// 	return result
 	
 	while (asm.length)
 	{
@@ -70,8 +82,8 @@ export function parseContractCall(script: string)
 		if (!e)
 			break
 		
-		if (!e.name.startsWith("PUSHBYTES"))
-			break
+		// if (!e.name.startsWith("PUSHBYTES"))
+		// 	break
 		
 		if (!e.hex)
 			break
