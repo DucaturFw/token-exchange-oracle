@@ -65,3 +65,15 @@ it('should open payment channel', done =>
 		}).catch(err => done(err || "unknown promise error!"))
 	})
 }, 40000)
+
+it('should get table data', done =>
+{
+	getTableRows("l2dex.code", "l2dex.code", "channels").then(x =>
+	{
+		expect(x).toBeDefined()
+		expect(x.rows).toBeDefined()
+		expect(x.rows.length).toBeGreaterThan(0)
+		console.log(x.rows[0])
+		done()
+	}).catch(err => done(err || "unknown promise error!"))
+}, 20000)

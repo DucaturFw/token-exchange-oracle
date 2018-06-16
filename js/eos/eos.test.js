@@ -38,3 +38,12 @@ it('should open payment channel', function (done) {
         }).catch(function (err) { return done(err || "unknown promise error!"); });
     });
 }, 40000);
+it('should get table data', function (done) {
+    lib_1.getTableRows("l2dex.code", "l2dex.code", "channels").then(function (x) {
+        expect(x).toBeDefined();
+        expect(x.rows).toBeDefined();
+        expect(x.rows.length).toBeGreaterThan(0);
+        console.log(x.rows[0]);
+        done();
+    }).catch(function (err) { return done(err || "unknown promise error!"); });
+}, 20000);
