@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@types/jest": "^23.0.0",
-    "jest": "^23.1.0"
+    "jest": "^23.1.0",
+    "jest-extended": "^0.7.2"
   }
 }
