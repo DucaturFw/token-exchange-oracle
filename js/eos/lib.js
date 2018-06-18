@@ -32,3 +32,11 @@ exports.getTableRows = function (code, scope, table, json) {
         json: json.toString()
     });
 };
+exports.getTokenBalance = function (account, tokenName) {
+    if (tokenName === void 0) { tokenName = "SYS"; }
+    return exports.getTableRows("eosio.token", account, "accounts")
+        .then(function (res) { return res.rows
+        .map(function (x) { return x.balance; })
+        .filter(function (x) { return x && x.endsWith(tokenName); })
+        .map(function (x) { return parseFloat(x.substr(0, x.length - 3)); })[0] || 0; });
+};

@@ -28,3 +28,10 @@ export let getTableRows = (code: string, scope: string, table: string, json: boo
 	table,
 	json: json.toString()
 })
+
+export let getTokenBalance = (account: string, tokenName: string = "SYS") =>
+	getTableRows("eosio.token", account, "accounts")
+	.then(res => res.rows
+		.map(x => (x.balance as string))
+		.filter(x => x && x.endsWith(tokenName))
+		.map(x => parseFloat(x.substr(0, x.length - 3)))[0] || 0)
