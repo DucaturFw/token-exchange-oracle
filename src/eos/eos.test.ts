@@ -1,15 +1,22 @@
-import { eos, getTableRows } from "./lib"
-import Eos, { IEosContract, IEosjsCallsParams } from "eosjs";
+import "jest-extended"
+
+import { eos, getTableRows, getTokenBalance } from "./lib"
+import Eos, { IEosContract, IEosjsCallsParams } from "eosjs"
+import appConfig from "../config"
+
+jest.setTimeout(20000)
 
 it('should connect to testnet', done =>
 {
 	eos.getInfo((err: any, res: any) =>
 	{
 		expect(err).toBeFalsy()
+
+		expect(res).toBeDefined()
 		
 		done()
 	})
-}, 20000)
+})
 
 interface IL2dexContract extends IEosContract
 {
@@ -40,12 +47,12 @@ it('should get contract', done =>
 
 		done()
 	})
-}, 20000)
+})
 
 it('should open payment channel', done =>
 {
 	let auth = { authorization: "tester1", sign: true }
-	let PK = require('../../data/config.json').eos.pk
+	let PK = appConfig.eos.pk
 	eos.contract<IL2dexContract>('l2dex.code', auth, (err, res) =>
 	{
 		expect(err).toBeFalsy()
@@ -73,7 +80,67 @@ it('should get table data', done =>
 		expect(x).toBeDefined()
 		expect(x.rows).toBeDefined()
 		expect(x.rows.length).toBeGreaterThan(0)
-		console.log(x.rows[0])
+		// console.log(x.rows[0])
 		done()
 	}).catch(err => done(err || "unknown promise error!"))
-}, 20000)
+})
+
+it('should read tokens balance', done =>
+{
+	getTokenBalance("tester1", "SYS").then(balance =>
+	{
+		expect(balance).toBeNumber()
+		expect(balance).toBeGreaterThanOrEqual(0)
+		done()
+	})
+})
+
+
+interface ITokenContract extends IEosContract
+{
+	create(...args: any[]): Promise<void>
+	issue(args: {
+		to: string,
+		quantity: string,
+		memo: string
+	}, extra?: IEosjsCallsParams): Promise<void>
+	transfer(args: {
+		from: string,
+		to: string,
+		quantity: string,
+		memo: string
+	}, extra?: IEosjsCallsParams): Promise<void>
+}
+
+it('should mint tokens', done =>
+{
+	let auth = { authorization: "eosio", sign: true, broadcast: true, debug: true }
+	let PK = appConfig.eos.pk
+
+	getTokenBalance("tester1", "SYS").then(oldBalance =>
+	{
+		expect(oldBalance).toBeNumber()
+		eos.contract<ITokenContract>("eosio.token", (err, res) =>
+		{
+			expect(err).toBeFalsy()
+			expect(res).toBeDefined()
+
+			res.issue({
+				to: "tester1",
+				quantity: "1.0000 SYS",
+				memo: `eos.test.${Math.floor(Math.random() * 10000)}`
+			}, auth).then(__ =>
+			{
+				setTimeout(() => getTokenBalance("tester1", "SYS").then(newBalance =>
+				{
+					expect(newBalance).toBeNumber()
+					expect(newBalance).toBeGreaterThan(oldBalance)
+					expect(newBalance).toEqual(oldBalance + 1)
+
+					done()
+
+				}), 500)
+			})
+		})
+	})
+})
