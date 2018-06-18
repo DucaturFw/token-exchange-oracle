@@ -1,15 +1,12 @@
-declare interface EosEcc
-{
-	privateToPublic(pk: string): string
-}
-
 declare module "eosjs"
 {
+	import * as EosEcc from "eosjs-ecc"
+
 	interface EosDefault
 	{
 		(config: any): EosInstance
 		modules: {
-			ecc: EosEcc
+			ecc: typeof EosEcc
 		}
 	}
 	let Eos: EosDefault
@@ -74,7 +71,11 @@ declare module "eosjs"
 		voteproducer(...args: any[]): any
 		create(...args: any[]): any
 		issue(...args: any[]): any
-		transfer(...args: any[]): any
+		transfer(from: string, to: string, quantity: string, memo: string): Promise<any>
+		transfer(from: string, to: string, quantity: string, memo: string, callback: (err: any, res: any) => void): void
+		transfer(params: {from: string, to: string, quantity: string, memo: string}, extra?: IEosjsCallsParams): Promise<any>
+		transfer(params: {from: string, to: string, quantity: string, memo: string}, callback: (err: any, res: any) => void): void
+		transfer(params: {from: string, to: string, quantity: string, memo: string}, extra: IEosjsCallsParams, callback: (err: any, res: any) => void): void
 		// contract(...args: any[]): any
 		contract<T extends IEosContract>(name: string, callback: (err: any, res: T) => void): void
 		contract<T extends IEosContract>(name: string): Promise<T>
