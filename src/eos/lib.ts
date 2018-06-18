@@ -1,6 +1,6 @@
 import Eos from "eosjs"
+import confjs from "../config"
 
-let confjs = require(`../../data/config.json`)
 console.assert(confjs.eos.pk, "pk not found in config")
 console.assert(confjs.eos.rpc, "rpc not found in config")
 

@@ -4,14 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var eosjs_1 = __importDefault(require("eosjs"));
-var confjs = require("../../data/config.json");
-console.assert(confjs.eos.pk, "pk not found in config");
-console.assert(confjs.eos.rpc, "rpc not found in config");
+var config_1 = __importDefault(require("../config"));
+console.assert(config_1.default.eos.pk, "pk not found in config");
+console.assert(config_1.default.eos.rpc, "rpc not found in config");
 var config = {
-    chainId: confjs.eos.chainId,
+    chainId: config_1.default.eos.chainId,
     // chainId: null,
-    keyProvider: confjs.eos.pk,
-    httpEndpoint: confjs.eos.rpc,
+    keyProvider: config_1.default.eos.pk,
+    httpEndpoint: config_1.default.eos.rpc,
     // mockTransactions: () => 'pass', // or 'fail'
     /* transactionHeaders: (expireInSeconds: any, callback: (error: any, headers: any)) => {
         callback(undefined, headers)
