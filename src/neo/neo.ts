@@ -2,8 +2,8 @@ import agent from "superagent"
 import { disassemble, IEntry } from "./neo-disassemble"
 import { u as neon_u } from "@cityofzion/neon-js"
 
-export let NEO_API_URL = `http://18.206.212.253:4000`
-export let NEO_CONTRACT_ADDR = ``
+export let NEO_API_URL = `http://35.172.116.56:4000`
+export let NEO_CONTRACT_ADDR = `AQvBs7NDrx97qjP1TzdTxdCnchGak8bjdt`
 
 function fakeContractData()
 {
@@ -98,7 +98,7 @@ export function getNeoTransfers(callback: (err: any, transfers: ICrossExchangeTr
 {
 	function parseContract(contract: string)
 	{
-		return fakeContractData()
+		return parseExchangeCall(contract)
 	}
 
 	agent(`${NEO_API_URL}/api/main_net/v1/get_last_transactions_by_address/${NEO_CONTRACT_ADDR}`)
@@ -111,35 +111,43 @@ export function getNeoTransfers(callback: (err: any, transfers: ICrossExchangeTr
 			if (!txs || !Array.isArray(txs))
 				return callback(`not an array! ${txs}`, undefined)
 
-			txs = txs.filter(x => x.transfers && x.transfers.length)
+			txs = txs.filter(x => x.type == "InvocationTransaction")
 
-			let ethTransfers: ICrossExchangeTransfer[] = []
-			txs.forEach(tx =>
-			{
-				tx.transfers.forEach(transfer =>
+			Promise
+				.all(txs.map(tx => agent.get(`${NEO_API_URL}/api/main_net/v1/get_transaction/${tx.txid}`)))
+				.then(txs => txs.map(tx => tx.body as { txid: string, script: string }))
+				.then(txs =>
 				{
-					if (!transfer.contract)
-						return
-					
-					let contract = parseContract(transfer.contract)
-					if (contract.method != "exchange")
-						return
-					
-					let [from, amount, blockchainTo, to] = contract.params as [string, number, string, string]
-					ethTransfers.push({
-						from,
-						to,
-						amount,
-						tx: tx.txid,
-						blockchainFrom: "NEO",
-						blockchainTo,
+					let ethTransfers: ICrossExchangeTransfer[] = []
+					txs.forEach(tx =>
+					{
+						if (!tx.script)
+							return
+						
+						let contract = parseContract(tx.script)
+						if (!contract || contract.method != "exchange")
+							return
+						
+						let [from, amount, blockchainTo, to] = contract.params as [string, number, string, string]
+						blockchainTo = blockchainTo.toLowerCase()
+						ethTransfers.push({
+							from,
+							to,
+							amount,
+							tx: tx.txid,
+							blockchainFrom: "neo",
+							blockchainTo,
+						})
 					})
+					return callback(undefined, ethTransfers)
 				})
-			})
-			return callback(undefined, ethTransfers)
+				.catch(err => callback(err, undefined))
 		})
 }
 export function sendNeoToken(transfer: ICrossExchangeTransfer)
 {
 	// mint NEO tokens
+	console.log(`\n\n-----TRANSFER NEO-----\n`)
+	console.log(transfer)
+	console.log(`\n----------------------\n\n`)
 }
