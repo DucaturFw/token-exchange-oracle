@@ -1,7 +1,7 @@
 import * as util from "util"
 import { promisify, ignoreError } from "./tools"
 import { getNeoTransfers, sendNeoToken } from "./neo/neo"
-import { sendEthToken, getEthTransfers } from "./eth"
+import { sendEthToken, getEthTransfers } from "./eth/eth"
 
 let processed: { [tx: string]: boolean } = { }
 

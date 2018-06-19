@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var tools_1 = require("./tools");
 var neo_1 = require("./neo/neo");
-var eth_1 = require("./eth");
+var eth_1 = require("./eth/eth");
 var processed = {};
 setInterval(_poll_, 1000);
 function _poll_() {
