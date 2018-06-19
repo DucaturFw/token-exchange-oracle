@@ -28,7 +28,7 @@ function disassemble(script) {
         return int;
     }
     var entries = [];
-    var bytes = new Buffer(script, 'hex');
+    var bytes = Buffer.from(script, 'hex');
     var i = 0;
     while (i < (bytes.length - 1)) {
         var opcode = readByte();
@@ -46,7 +46,7 @@ function disassemble(script) {
         }
         else if ((opcode >= OpCode.PUSH1 && opcode <= OpCode.PUSH16) || (opcode == OpCode.PUSH0)) {
             entry.int = opcode && (opcode - OpCode.PUSH1 + 1);
-            entry.data = new Buffer([entry.int]);
+            entry.data = Buffer.from([entry.int]);
         }
         else
             switch (opcode) {

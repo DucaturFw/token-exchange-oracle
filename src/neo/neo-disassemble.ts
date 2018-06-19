@@ -44,7 +44,7 @@ export function disassemble(script: string)
 	}
 
 	let entries = []
-	let bytes = new Buffer(script, 'hex')
+	let bytes = Buffer.from(script, 'hex')
 	let i = 0
 	while (i < (bytes.length - 1))
 	{
@@ -67,7 +67,7 @@ export function disassemble(script: string)
 		if ((opcode >= OpCode.PUSH1 && opcode <= OpCode.PUSH16) || (opcode == OpCode.PUSH0))
 		{
 			entry.int = opcode && (opcode - OpCode.PUSH1 + 1)
-			entry.data = new Buffer([entry.int])
+			entry.data = Buffer.from([entry.int])
 		}
 		else
 		switch (opcode)
