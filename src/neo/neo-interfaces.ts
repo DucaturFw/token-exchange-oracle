@@ -2,16 +2,17 @@ interface IValueTransfer
 {
 	value: number
 	asset: string
-	address_hash: string
 }
 interface IVout extends IValueTransfer
 {
 	transaction_id: number
+	address: string
 }
 interface IVin extends IValueTransfer
 {
 	txid: string
 	n: number
+	address_hash: string
 }
 interface ITransfer
 {
