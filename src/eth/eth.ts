@@ -3,8 +3,7 @@ import { EventLog } from "web3/types"
 import appConfig from "../config"
 
 let ETH_ABI = require('../../data/ducatur-eth.abi.json')
-let ETH_CONTRACT_ADDR = `0x16237cda239d9e368ab67dc4e5a28964759727ec`
-ETH_CONTRACT_ADDR = `0x60903CDA8643805F9567a083C1734E139Fe7dAD2`
+let ETH_CONTRACT_ADDR = appConfig.eth.contractAddr
 
 let web3 = new Web3(new Web3.providers.WebsocketProvider(appConfig.eth.ws))
 

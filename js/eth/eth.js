@@ -6,8 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var web3_1 = __importDefault(require("web3"));
 var config_1 = __importDefault(require("../config"));
 var ETH_ABI = require('../../data/ducatur-eth.abi.json');
-var ETH_CONTRACT_ADDR = "0x16237cda239d9e368ab67dc4e5a28964759727ec";
-ETH_CONTRACT_ADDR = "0x60903CDA8643805F9567a083C1734E139Fe7dAD2";
+var ETH_CONTRACT_ADDR = config_1.default.eth.contractAddr;
 var web3 = new web3_1.default(new web3_1.default.providers.WebsocketProvider(config_1.default.eth.ws));
 var events = [];
 web3.eth.net.isListening().then(function (b) {
