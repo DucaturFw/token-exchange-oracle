@@ -22,16 +22,19 @@ let config = {
 
 export let eos = Eos(config)
 
-export let getTableRows = (code: string, scope: string, table: string, json: boolean = true) => eos.getTableRows({
-	code,
-	scope,
-	table,
-	json: json.toString()
-})
+export function getTableRows<T>(code: string, scope: string, table: string, json: boolean = true)
+{
+	return eos.getTableRows<T>({
+		code,
+		scope,
+		table,
+		json: json.toString()
+	})
+}
 
 export let getTokenBalance = (account: string, tokenName: string = "SYS") =>
-	getTableRows("eosio.token", account, "accounts")
-	.then(res => res.rows
-		.map(x => (x.balance as string))
-		.filter(x => x && x.endsWith(tokenName))
-		.map(x => parseFloat(x.substr(0, x.length - 3)))[0] || 0)
+	getTableRows<{ balance: string }>("eosio.token", account, "accounts")
+		.then(res => res.rows
+			.map(x => x.balance)
+			.filter(x => x && x.endsWith(tokenName))
+			.map(x => parseFloat(x.substr(0, x.length - 3)))[0] || 0)

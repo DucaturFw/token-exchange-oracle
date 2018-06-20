@@ -27,7 +27,7 @@ declare module "eosjs"
 		getBlock(...args: any[]): any
 		getAccount(...args: any[]): any
 		getCode(...args: any[]): any
-		getTableRows(config: { code: string, scope: string, table: string, json?: string }): Promise<ITableResult<any>>
+		getTableRows<T>(config: { code: string, scope: string, table: string, json?: string }): Promise<ITableResult<T>>
 		abiJsonToBin(...args: any[]): any
 		abiBinToJson(...args: any[]): any
 		getRequiredKeys(...args: any[]): any

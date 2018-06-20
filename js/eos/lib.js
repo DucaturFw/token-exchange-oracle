@@ -23,7 +23,7 @@ var config = {
     sign: true,
 };
 exports.eos = eosjs_1.default(config);
-exports.getTableRows = function (code, scope, table, json) {
+function getTableRows(code, scope, table, json) {
     if (json === void 0) { json = true; }
     return exports.eos.getTableRows({
         code: code,
@@ -31,10 +31,11 @@ exports.getTableRows = function (code, scope, table, json) {
         table: table,
         json: json.toString()
     });
-};
+}
+exports.getTableRows = getTableRows;
 exports.getTokenBalance = function (account, tokenName) {
     if (tokenName === void 0) { tokenName = "SYS"; }
-    return exports.getTableRows("eosio.token", account, "accounts")
+    return getTableRows("eosio.token", account, "accounts")
         .then(function (res) { return res.rows
         .map(function (x) { return x.balance; })
         .filter(function (x) { return x && x.endsWith(tokenName); })
