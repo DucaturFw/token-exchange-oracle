@@ -6,19 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var superagent_1 = __importDefault(require("superagent"));
 var neo_disassemble_1 = require("./neo-disassemble");
 var neon_js_1 = require("@cityofzion/neon-js");
-exports.NEO_API_URL = "http://35.172.116.56:4000";
-exports.NEO_CONTRACT_ADDR = "AQvBs7NDrx97qjP1TzdTxdCnchGak8bjdt";
-function fakeContractData() {
-    // FAKE CONTRACT DATA
-    var from = "AKQ8cCUoE99ncnRRbaYPit3pV3g58A6FJk";
-    var receiver = "0x54b7BC5BEa3845198Ff2936761087fc488504eeD";
-    var tokenAmount = 233;
-    var blockchainName = "ETH";
-    return {
-        method: "exchange",
-        params: [from, tokenAmount, blockchainName, receiver]
-    };
-}
+var config_1 = __importDefault(require("../config"));
+exports.NEO_API_URL = config_1.default.neo.apiUrl;
+exports.NEO_CONTRACT_ADDR = config_1.default.neo.contractAddr;
 function parseExchangeCall(script) {
     var call = parseContractCall(script);
     if (!call)

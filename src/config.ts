@@ -6,5 +6,9 @@ export default require('../data/config.json') as {
 	},
 	eth: {
 		ws: string
+	},
+	neo: {
+		apiUrl: string
+		contractAddr: string
 	}
 }

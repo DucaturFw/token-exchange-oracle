@@ -1,22 +1,11 @@
 import agent from "superagent"
 import { disassemble, IEntry } from "./neo-disassemble"
 import { u as neon_u } from "@cityofzion/neon-js"
+import appConfig from "../config";
 
-export let NEO_API_URL = `http://35.172.116.56:4000`
-export let NEO_CONTRACT_ADDR = `AQvBs7NDrx97qjP1TzdTxdCnchGak8bjdt`
+export let NEO_API_URL = appConfig.neo.apiUrl
+export let NEO_CONTRACT_ADDR = appConfig.neo.contractAddr
 
-function fakeContractData()
-{
-	// FAKE CONTRACT DATA
-	let from = "AKQ8cCUoE99ncnRRbaYPit3pV3g58A6FJk"
-	let receiver = "0x54b7BC5BEa3845198Ff2936761087fc488504eeD"
-	let tokenAmount = 233
-	let blockchainName = "ETH"
-	return {
-		method: "exchange",
-		params: [from, tokenAmount, blockchainName, receiver]
-	}
-}
 export function parseExchangeCall(script: string)
 {
 	let call = parseContractCall(script)
