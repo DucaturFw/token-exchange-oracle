@@ -23,7 +23,7 @@ export function parseAmount(amount: string): { value: number, symbol: string }
 
 export function getEosTransfers(callback: (err: any, transfers: ICrossExchangeTransfer[] | undefined) => void)
 {
-	getTableRows<IEosExchangeTransfer>("tester3", "tester3", "exoffer").then(res =>
+	getTableRows<IEosExchangeTransfer>("tester3", "tester3", "exchanges").then(res =>
 	{
 		// console.log(res.rows)
 

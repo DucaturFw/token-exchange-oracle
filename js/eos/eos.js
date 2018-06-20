@@ -11,7 +11,7 @@ function parseAmount(amount) {
 }
 exports.parseAmount = parseAmount;
 function getEosTransfers(callback) {
-    lib_1.getTableRows("tester3", "tester3", "exoffer").then(function (res) {
+    lib_1.getTableRows("tester3", "tester3", "exchanges").then(function (res) {
         // console.log(res.rows)
         var transfers = res.rows.map(function (x) { return ({
             amount: parseAmount(x.amount).value,
