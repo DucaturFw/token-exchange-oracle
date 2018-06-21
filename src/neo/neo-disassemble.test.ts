@@ -76,7 +76,7 @@ test('parse exchange contract call old & incomplete', () =>
 	expect(m.method).toEqual("exchange")
 	expect(m.params).toHaveLength(4)
 })
-test('parse exchange contract call #2', () =>
+test('parse exchange contract call #2 — fail on python type error', () =>
 {
 	let txScript = '06d1da4b86e64303656f7303404b4c1427c3d71a87b7cc901a5b1ac1611dfaf54cf749f154c10865786368616e6765678adc2546282d56f373b31533d4326fcd18484efe'
 	let ec = parseExchangeCall(txScript)
@@ -89,5 +89,5 @@ test('parse exchange contract call #2', () =>
 	expect(ec.params[0]).toEqual("AKQ8cCUoE99ncnRRbaYPit3pV3g58A6FJk")
 	expect(ec.params[1]).toEqual(0.05)
 	expect(ec.params[2]).toEqual("eos")
-	expect(ec.params[3]).toEqual("tester3")
+	expect(ec.params[3]).not.toEqual("tester3")
 })
