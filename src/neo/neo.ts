@@ -3,7 +3,8 @@ import { disassemble, IEntry } from "./neo-disassemble"
 import { u as neon_u } from "@cityofzion/neon-js"
 import appConfig from "../config";
 
-export let NEO_API_URL = appConfig.neo.apiUrl
+import { get_transactions, get_last_transactions_by_address } from "./lib"
+
 export let NEO_CONTRACT_ADDR = appConfig.neo.contractAddr
 
 export function parseExchangeCall(script: string)
@@ -85,26 +86,17 @@ export function parseContractCall(script: string)
 
 export function getNeoTransfers(callback: (err: any, transfers: ICrossExchangeTransfer[] | undefined) => void)
 {
-	function parseContract(contract: string)
-	{
-		return parseExchangeCall(contract)
-	}
-
-	agent(`${NEO_API_URL}/api/main_net/v1/get_last_transactions_by_address/${NEO_CONTRACT_ADDR}`)
-		.end((err, res) =>
+	get_last_transactions_by_address(NEO_CONTRACT_ADDR, (err, txs) =>
 		{
 			if (err)
 				return callback(err, undefined)
 			
-			let txs = res.body as ITransaction[]
-			if (!txs || !Array.isArray(txs))
-				return callback(`not an array! ${txs}`, undefined)
+			if (!txs)
+				return callback("undefined transaction list!", undefined)
 
 			txs = txs.filter(x => x.type == "InvocationTransaction")
 
-			Promise
-				.all(txs.map(tx => agent.get(`${NEO_API_URL}/api/main_net/v1/get_transaction/${tx.txid}`)))
-				.then(txs => txs.map(tx => tx.body as { txid: string, script: string }))
+			get_transactions(txs.map(tx => tx.txid))
 				.then(txs =>
 				{
 					let ethTransfers: ICrossExchangeTransfer[] = []
@@ -113,7 +105,7 @@ export function getNeoTransfers(callback: (err: any, transfers: ICrossExchangeTr
 						if (!tx.script)
 							return
 						
-						let contract = parseContract(tx.script)
+						let contract = parseExchangeCall(tx.script)
 						if (!contract || contract.method != "exchange")
 							return
 						

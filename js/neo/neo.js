@@ -3,11 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var superagent_1 = __importDefault(require("superagent"));
 var neo_disassemble_1 = require("./neo-disassemble");
 var neon_js_1 = require("@cityofzion/neon-js");
 var config_1 = __importDefault(require("../config"));
-exports.NEO_API_URL = config_1.default.neo.apiUrl;
+var lib_1 = require("./lib");
 exports.NEO_CONTRACT_ADDR = config_1.default.neo.contractAddr;
 function parseExchangeCall(script) {
     var call = parseContractCall(script);
@@ -82,26 +81,19 @@ function parseContractCall(script) {
 }
 exports.parseContractCall = parseContractCall;
 function getNeoTransfers(callback) {
-    function parseContract(contract) {
-        return parseExchangeCall(contract);
-    }
-    superagent_1.default(exports.NEO_API_URL + "/api/main_net/v1/get_last_transactions_by_address/" + exports.NEO_CONTRACT_ADDR)
-        .end(function (err, res) {
+    lib_1.get_last_transactions_by_address(exports.NEO_CONTRACT_ADDR, function (err, txs) {
         if (err)
             return callback(err, undefined);
-        var txs = res.body;
-        if (!txs || !Array.isArray(txs))
-            return callback("not an array! " + txs, undefined);
+        if (!txs)
+            return callback("undefined transaction list!", undefined);
         txs = txs.filter(function (x) { return x.type == "InvocationTransaction"; });
-        Promise
-            .all(txs.map(function (tx) { return superagent_1.default.get(exports.NEO_API_URL + "/api/main_net/v1/get_transaction/" + tx.txid); }))
-            .then(function (txs) { return txs.map(function (tx) { return tx.body; }); })
+        lib_1.get_transactions(txs.map(function (tx) { return tx.txid; }))
             .then(function (txs) {
             var ethTransfers = [];
             txs.forEach(function (tx) {
                 if (!tx.script)
                     return;
-                var contract = parseContract(tx.script);
+                var contract = parseExchangeCall(tx.script);
                 if (!contract || contract.method != "exchange")
                     return;
                 var _a = contract.params, from = _a[0], amount = _a[1], blockchainTo = _a[2], to = _a[3];
