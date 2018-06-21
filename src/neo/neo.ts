@@ -1,7 +1,7 @@
 import agent from "superagent"
 import { disassemble, IEntry } from "./neo-disassemble"
-import { u as neon_u } from "@cityofzion/neon-js"
-import appConfig from "../config";
+import { u as neon_u, wallet } from "@cityofzion/neon-js"
+import appConfig from "../config"
 
 import { get_transactions, get_last_transactions_by_address } from "./lib"
 
@@ -21,9 +21,10 @@ export function parseExchangeCall(script: string)
 	
 	let juxt = (...funcs: ((a:string) => any)[]) => (...args: any[]) => args.map((x, idx) => funcs[idx](x))
 	let hex = (x: string) => neon_u.hexstring2str(x)
+	let addr = (x: string) => wallet.getAddressFromScriptHash(neon_u.reverseHex(x))
 	// let int = (x: string) => neon_u.Fixed8.fromHex(x)
-	let int = (x: string) => parseInt(x, 16)
-	let exchArgs = juxt(hex, int, hex, hex)
+	let int = (x: string) => neon_u.fixed82num(x)
+	let exchArgs = juxt(addr, int, hex, hex)
 	return {
 		method: call.method,
 		params: exchArgs.apply(null, call.params)
@@ -32,6 +33,7 @@ export function parseExchangeCall(script: string)
 export function parseContractCall(script: string)
 {
 	let asm = disassemble(script)
+	console.log(asm)
 	let e = asm.pop()
 	if (!e)
 		return undefined
@@ -105,6 +107,8 @@ export function getNeoTransfers(callback: (err: any, transfers: ICrossExchangeTr
 						if (!tx.script)
 							return
 						
+						// console.log(tx)
+
 						let contract = parseExchangeCall(tx.script)
 						if (!contract || contract.method != "exchange")
 							return

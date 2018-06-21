@@ -56,7 +56,7 @@ test('parse exchange disassemble', () =>
 	expect(c[4].name).toEqual(`PUSHBYTES8`)
 	expect(c[4].hex).toEqual(`65786368616e6765`)
 })
-test('parse exchange contract call', () =>
+test('parse exchange contract call old & incomplete', () =>
 {
 	let txScript = NORM_TX
 	let c = parseContractCall(txScript)
@@ -75,8 +75,19 @@ test('parse exchange contract call', () =>
 	
 	expect(m.method).toEqual("exchange")
 	expect(m.params).toHaveLength(4)
-	expect(m.params[0]).toEqual("AQvBs7NDrx97qjP1TzdTxdCnchGak8bjdt")
-	expect(m.params[1]).toEqual(10)
-	expect(m.params[2]).toEqual("ETH")
-	expect(m.params[3]).toEqual("0x0")
+})
+test('parse exchange contract call #2', () =>
+{
+	let txScript = '06d1da4b86e64303656f7303404b4c1427c3d71a87b7cc901a5b1ac1611dfaf54cf749f154c10865786368616e6765678adc2546282d56f373b31533d4326fcd18484efe'
+	let ec = parseExchangeCall(txScript)
+	expect(ec).toBeDefined()
+	if (!ec)
+		return
+	
+	expect(ec.method).toEqual("exchange")
+	expect(ec.params).toHaveLength(4)
+	expect(ec.params[0]).toEqual("AKQ8cCUoE99ncnRRbaYPit3pV3g58A6FJk")
+	expect(ec.params[1]).toEqual(0.05)
+	expect(ec.params[2]).toEqual("eos")
+	expect(ec.params[3]).toEqual("tester3")
 })

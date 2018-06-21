@@ -31,9 +31,10 @@ function parseExchangeCall(script) {
         };
     };
     var hex = function (x) { return neon_js_1.u.hexstring2str(x); };
+    var addr = function (x) { return neon_js_1.wallet.getAddressFromScriptHash(neon_js_1.u.reverseHex(x)); };
     // let int = (x: string) => neon_u.Fixed8.fromHex(x)
-    var int = function (x) { return parseInt(x, 16); };
-    var exchArgs = juxt(hex, int, hex, hex);
+    var int = function (x) { return neon_js_1.u.fixed82num(x); };
+    var exchArgs = juxt(addr, int, hex, hex);
     return {
         method: call.method,
         params: exchArgs.apply(null, call.params)
@@ -42,6 +43,7 @@ function parseExchangeCall(script) {
 exports.parseExchangeCall = parseExchangeCall;
 function parseContractCall(script) {
     var asm = neo_disassemble_1.disassemble(script);
+    console.log(asm);
     var e = asm.pop();
     if (!e)
         return undefined;
@@ -93,6 +95,7 @@ function getNeoTransfers(callback) {
             txs.forEach(function (tx) {
                 if (!tx.script)
                     return;
+                // console.log(tx)
                 var contract = parseExchangeCall(tx.script);
                 if (!contract || contract.method != "exchange")
                     return;
