@@ -43,7 +43,7 @@ function parseExchangeCall(script) {
 exports.parseExchangeCall = parseExchangeCall;
 function parseContractCall(script) {
     var asm = neo_disassemble_1.disassemble(script);
-    console.log(asm);
+    // console.log(asm)
     var e = asm.pop();
     if (!e)
         return undefined;

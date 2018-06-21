@@ -33,7 +33,7 @@ export function parseExchangeCall(script: string)
 export function parseContractCall(script: string)
 {
 	let asm = disassemble(script)
-	console.log(asm)
+	// console.log(asm)
 	let e = asm.pop()
 	if (!e)
 		return undefined
