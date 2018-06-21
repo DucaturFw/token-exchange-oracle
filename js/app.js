@@ -5,9 +5,9 @@ var neo_1 = require("./neo/neo");
 var eth_1 = require("./eth/eth");
 var eos_1 = require("./eos/eos");
 var processed = {};
-setInterval(_poll_, 1000);
+setInterval(_poll_, 3000);
 function _poll_() {
-    console.log("poll");
+    console.log("poll " + new Date().toISOString());
     var processors = {
         eth: eth_1.sendEthToken,
         neo: neo_1.sendNeoToken,
@@ -24,7 +24,8 @@ function _poll_() {
         .then(function (transfers) {
         // console.log(transfers)
         transfers.forEach(function (tx) {
-            var p = processors[tx.blockchainTo];
+            var toBlock = (tx.blockchainTo || "").toLowerCase();
+            var p = processors[toBlock];
             if (!p)
                 return console.error("no such target blockchain! " + tx.blockchainTo);
             processed[tx.tx] = true;

@@ -6,11 +6,11 @@ import { getEosTransfers, sendEosToken } from "./eos/eos"
 
 let processed: { [tx: string]: boolean } = { }
 
-setInterval(_poll_, 1000)
+setInterval(_poll_, 3000)
 
 function _poll_()
 {
-	console.log("poll")
+	console.log("poll " + new Date().toISOString())
 
 	let processors = {
 		eth: sendEthToken,
@@ -32,7 +32,8 @@ function _poll_()
 
 			transfers.forEach(tx =>
 			{
-				let p = processors[tx.blockchainTo]
+				let toBlock = (tx.blockchainTo || "").toLowerCase()
+				let p = processors[toBlock]
 				if (!p)
 					return console.error(`no such target blockchain! ${tx.blockchainTo}`)
 				
