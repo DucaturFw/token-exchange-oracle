@@ -34,7 +34,7 @@ describe('getEosTransfers with mocked getTableRows', () =>
 			amount: '50.0000 DUC',
 			blockchain: 'eth',
 			pubtime: '2018-06-19T17:05:34',
-			exchanged: 0
+			txid: '',
 		}]
 		lib.getTableRows = jest.fn(() => Promise.resolve({ rows: MOCKED_DATA }))
 		getEosTransfers((err, transfers) =>
@@ -52,7 +52,8 @@ describe('getEosTransfers with mocked getTableRows', () =>
 				blockchainFrom: "eos",
 				blockchainTo: "eth",
 				from: "tester2",
-				to: "0x12345678"
+				to: "0x12345678",
+				tx: ''
 			} as typeof transfers[0])
 			expect(transfers[0].amount).toBeCloseTo(50)
 

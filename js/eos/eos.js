@@ -17,7 +17,7 @@ function getEosTransfers(callback) {
             amount: parseAmount(x.amount).value,
             to: x.to,
             from: x.from,
-            tx: x.id + "",
+            tx: x.txid + "",
             blockchainFrom: 'eos',
             blockchainTo: x.blockchain,
         }); });

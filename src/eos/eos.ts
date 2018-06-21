@@ -31,7 +31,7 @@ export function getEosTransfers(callback: (err: any, transfers: ICrossExchangeTr
 			amount: parseAmount(x.amount).value,
 			to: x.to,
 			from: x.from,
-			tx: x.id + "",
+			tx: x.txid + "",
 			blockchainFrom: 'eos',
 			blockchainTo: x.blockchain,
 		}))
