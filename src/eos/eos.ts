@@ -1,5 +1,7 @@
 import { eos, getTableRows } from "./lib"
 
+import appConfig from "../config"
+
 interface IEosExchangeTransfer
 {
 	id: number
@@ -10,6 +12,8 @@ interface IEosExchangeTransfer
 	pubtime: string
 	txid: string
 }
+
+let CONTRACT_ADDR = appConfig.eos.contractAddr
 
 export function parseAmount(amount: string): { value: number, symbol: string }
 {
@@ -23,7 +27,7 @@ export function parseAmount(amount: string): { value: number, symbol: string }
 
 export function getEosTransfers(callback: (err: any, transfers: ICrossExchangeTransfer[] | undefined) => void)
 {
-	getTableRows<IEosExchangeTransfer>("tester3", "tester3", "exchanges").then(res =>
+	getTableRows<IEosExchangeTransfer>(CONTRACT_ADDR, CONTRACT_ADDR, "exchanges").then(res =>
 	{
 		// console.log(res.rows)
 
