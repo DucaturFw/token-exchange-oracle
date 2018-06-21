@@ -41,7 +41,7 @@ describe('getEosTransfers with mocked getTableRows', function () {
                 blockchainTo: "eth",
                 from: "tester2",
                 to: "0x12345678",
-                tx: ''
+                tx: '0'
             });
             expect(transfers[0].amount).toBeCloseTo(50);
             done();
