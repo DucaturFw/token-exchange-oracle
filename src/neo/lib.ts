@@ -35,7 +35,8 @@ export function get_transactions(txids: string[]): Promise<ISingleTransaction[]>
 }
 export function getApplog(txid: string): Promise<IApplogTx>
 {
-	return agent.get(`${appConfig.neo.applog}/tx/${txid}`).then(x => x.body && x.body.tx)
+	txid = txid.replace(/^0x/, '')
+	return agent.get(`${appConfig.neo.applog}/tx/0x${txid}`).then(x => x.body && x.body.tx)
 }
 export function getTxsWithLogs(txids: string[]): Promise<{ tx: ISingleTransaction, log: IApplogTx }[]>
 {

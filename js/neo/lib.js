@@ -31,7 +31,8 @@ function get_transactions(txids) {
 }
 exports.get_transactions = get_transactions;
 function getApplog(txid) {
-    return superagent_1.default.get(config_1.default.neo.applog + "/tx/" + txid).then(function (x) { return x.body && x.body.tx; });
+    txid = txid.replace(/^0x/, '');
+    return superagent_1.default.get(config_1.default.neo.applog + "/tx/0x" + txid).then(function (x) { return x.body && x.body.tx; });
 }
 exports.getApplog = getApplog;
 function getTxsWithLogs(txids) {
