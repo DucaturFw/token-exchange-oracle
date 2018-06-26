@@ -34,3 +34,28 @@ describe('neoscan getting info', function () {
         });
     });
 });
+describe('applog getting info', function () {
+    it('should get random app log', function (done) {
+        var txid = "0x28ddfb25e0ca367f3344326fd78b4e34d8f10595057a22cf88de28b41e25f8d0";
+        lib_1.getApplog(txid).then(function (tx) {
+            done();
+        });
+    });
+    it('should get correct app log', function (done) {
+        var txid = "0x14ca7a93fdcf0a515dcef228cea3b1b4dcc35895e14322276166a02785520deb";
+        lib_1.getApplog(txid).then(function (tx) {
+            expect(tx).toBeDefined();
+            expect(tx.txid).toEqual(txid);
+            expect(tx.vmstate).toEqual("HALT, BREAK");
+            expect(tx.stack).toBeArray();
+            expect(tx.stack).not.toBeEmpty();
+            var ret = tx.stack.pop();
+            expect(ret).toBeDefined();
+            if (!ret)
+                return done("ret is null");
+            expect(ret.type).toEqual("Integer");
+            expect(ret.value).toEqual("1");
+            done();
+        });
+    });
+});
