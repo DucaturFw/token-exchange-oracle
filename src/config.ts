@@ -11,6 +11,7 @@ export default require('../data/config.json') as {
 	},
 	neo: {
 		apiUrl: string
+		applog: string
 		contractAddr: string
 	}
 }

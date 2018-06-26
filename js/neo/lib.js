@@ -30,3 +30,15 @@ function get_transactions(txids) {
     return Promise.all(txids.map(get_transaction));
 }
 exports.get_transactions = get_transactions;
+function getApplog(txid) {
+    return superagent_1.default.get(config_1.default.neo.applog + "/tx/" + txid).then(function (x) { return x.body && x.body.tx; });
+}
+exports.getApplog = getApplog;
+function getTxsWithLogs(txids) {
+    return Promise.all([get_transactions(txids), Promise.all(txids.map(function (txid) { return getApplog(txid); }))])
+        .then(function (_a) {
+        var txs = _a[0], logs = _a[1];
+        return txs.map(function (tx, idx) { return ({ tx: tx, log: logs[idx] }); });
+    });
+}
+exports.getTxsWithLogs = getTxsWithLogs;

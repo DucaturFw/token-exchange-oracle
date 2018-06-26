@@ -1,6 +1,6 @@
 import agent from "superagent"
 
-import appConfig from "../config";
+import appConfig from "../config"
 
 export let NEO_API_URL = appConfig.neo.apiUrl
 
@@ -32,4 +32,13 @@ export function get_transaction(txid: string): Promise<ISingleTransaction>
 export function get_transactions(txids: string[]): Promise<ISingleTransaction[]>
 {
 	return Promise.all(txids.map(get_transaction))
+}
+export function getApplog(txid: string): Promise<IApplogTx>
+{
+	return agent.get(`${appConfig.neo.applog}/tx/${txid}`).then(x => x.body && x.body.tx)
+}
+export function getTxsWithLogs(txids: string[]): Promise<{ tx: ISingleTransaction, log: IApplogTx }[]>
+{
+	return Promise.all([get_transactions(txids), Promise.all(txids.map(txid => getApplog(txid)))])
+		.then(([txs, logs]) => txs.map((tx, idx) => ({ tx: tx, log: logs[idx] })))
 }
