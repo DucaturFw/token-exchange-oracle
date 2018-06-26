@@ -2,6 +2,28 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var neo_disassemble_1 = require("./neo-disassemble");
 var neon_js_1 = require("@cityofzion/neon-js");
+exports.HALT_BREAK = "HALT, BREAK";
+exports.VM_TYPES = {
+    Integer: "Integer"
+};
+function checkTxSuccess(applog) {
+    // tx is successful when execution ends correctly
+    // and TRUE (Integer "1") is returned on stack
+    // (depends on contract implementation, works for us)
+    if (applog.vmstate != exports.HALT_BREAK) // execution failed
+        return false;
+    if (!applog.stack || !applog.stack.length) // no items on stack
+        return false;
+    var ret = applog.stack.pop();
+    if (!ret) // can't happen, only needed for TS compiler
+        return false;
+    if (ret.type != exports.VM_TYPES.Integer) // return value type is incorrect
+        return false;
+    if (ret.value != "1") // return value is not TRUE
+        return false;
+    return true;
+}
+exports.checkTxSuccess = checkTxSuccess;
 function parseExchangeCall(script) {
     var call = parseContractCall(script);
     if (!call)

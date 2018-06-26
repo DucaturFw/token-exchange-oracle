@@ -48,3 +48,11 @@ test('parse exchange contract call #2 — fail on python type error', function (
     expect(ec.params[2]).toEqual("eos");
     expect(ec.params[3]).not.toEqual("tester3");
 });
+test('check transaction call result #1', function () {
+    var tx = { "txid": "0xb2daa1fefd2ae1d0d3896525c9b9b0d07ac24b2547c43d6fb8ec9e35d3f1428a", "vmstate": "HALT, BREAK", "gas_consumed": "1.796", "stack": [{ "type": "Integer", "value": "1" }], "notifications": [{ "contract": "0xfe4e4818cd6f32d43315b373f3562d284625dc8a", "state": { "type": "Array", "value": [{ "type": "ByteArray", "value": "65786368616e6765" }, { "type": "ByteArray", "value": "27c3d71a87b7cc901a5b1ac1611dfaf54cf749f1" }, { "type": "ByteArray", "value": "b80b" }, { "type": "ByteArray", "value": "656f73" }, { "type": "ByteArray", "value": "746573746572332e" }] } }] };
+    expect(neo_vm_1.checkTxSuccess(tx)).toEqual(true);
+});
+test('check transaction call result #2', function () {
+    var tx = { "txid": "0x28ddfb25e0ca367f3344326fd78b4e34d8f10595057a22cf88de28b41e25f8d0", "vmstate": "HALT, BREAK", "gas_consumed": "0.732", "stack": [{ "type": "ByteArray", "value": "" }], "notifications": [] };
+    expect(neo_vm_1.checkTxSuccess(tx)).toEqual(false);
+});

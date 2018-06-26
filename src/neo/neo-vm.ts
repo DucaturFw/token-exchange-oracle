@@ -1,6 +1,37 @@
 import { disassemble, IEntry } from "./neo-disassemble"
 import { u as neon_u, wallet } from "@cityofzion/neon-js"
 
+export const HALT_BREAK = "HALT, BREAK"
+export const VM_TYPES = {
+	Integer: "Integer"
+}
+
+export function checkTxSuccess(applog: IApplogTx): boolean
+{
+	// tx is successful when execution ends correctly
+	// and TRUE (Integer "1") is returned on stack
+	// (depends on contract implementation, works for us)
+
+	if (applog.vmstate != HALT_BREAK) // execution failed
+		return false
+	
+	if (!applog.stack || !applog.stack.length) // no items on stack
+		return false
+	
+	let ret = applog.stack.pop()
+
+	if (!ret) // can't happen, only needed for TS compiler
+		return false
+	
+	if (ret.type != VM_TYPES.Integer) // return value type is incorrect
+		return false
+	
+	if (ret.value != "1") // return value is not TRUE
+		return false
+	
+	return true
+}
+
 export function parseExchangeCall(script: string)
 {
 	let call = parseContractCall(script)
