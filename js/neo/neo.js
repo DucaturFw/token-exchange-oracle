@@ -14,17 +14,20 @@ function getNeoTransfers(callback) {
         if (!txs)
             return callback("undefined transaction list!", undefined);
         txs = txs.filter(function (x) { return x.type == "InvocationTransaction"; });
-        lib_1.get_transactions(txs.map(function (tx) { return tx.txid; }))
+        lib_1.getTxsWithLogs(txs.map(function (tx) { return tx.txid; }))
             .then(function (txs) {
             var ethTransfers = [];
-            txs.forEach(function (tx) {
+            txs.forEach(function (_a) {
+                var tx = _a.tx, log = _a.log;
                 if (!tx.script)
                     return;
                 // console.log(tx)
-                var contract = parseExchangeCall(tx.script);
+                var contract = neo_vm_1.parseExchangeCall(tx.script);
                 if (!contract || contract.method != "exchange")
                     return;
-                var _a = contract.params, from = _a[0], amount = _a[1], blockchainTo = _a[2], to = _a[3];
+                if (!neo_vm_1.checkTxSuccess(log)) // failed transaction (shouldn't be in the blockchain anyway)
+                    return;
+                var _b = contract.params, from = _b[0], amount = _b[1], blockchainTo = _b[2], to = _b[3];
                 blockchainTo = blockchainTo.toLowerCase();
                 ethTransfers.push({
                     from: from,

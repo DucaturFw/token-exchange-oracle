@@ -1,6 +1,7 @@
 import appConfig from "../config"
 
-import { parseExchangeCall } from "./neo-vm"
+import { get_last_transactions_by_address, getTxsWithLogs } from "./lib"
+import { parseExchangeCall, checkTxSuccess } from "./neo-vm"
 
 export let NEO_CONTRACT_ADDR = appConfig.neo.contractAddr
 
@@ -16,11 +17,11 @@ export function getNeoTransfers(callback: (err: any, transfers: ICrossExchangeTr
 
 			txs = txs.filter(x => x.type == "InvocationTransaction")
 
-			get_transactions(txs.map(tx => tx.txid))
-				.then(txs =>
+			getTxsWithLogs(txs.map(tx => tx.txid))
+				.then((txs) =>
 				{
 					let ethTransfers: ICrossExchangeTransfer[] = []
-					txs.forEach(tx =>
+					txs.forEach(({ tx, log }) =>
 					{
 						if (!tx.script)
 							return
@@ -29,6 +30,9 @@ export function getNeoTransfers(callback: (err: any, transfers: ICrossExchangeTr
 
 						let contract = parseExchangeCall(tx.script)
 						if (!contract || contract.method != "exchange")
+							return
+						
+						if (!checkTxSuccess(log)) // failed transaction (shouldn't be in the blockchain anyway)
 							return
 						
 						let [from, amount, blockchainTo, to] = contract.params as [string, number, string, string]
