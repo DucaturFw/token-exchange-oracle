@@ -41,3 +41,16 @@ interface ITransaction
 	vin: IVin[]
 	transfers: ITransfer[]
 }
+interface IStackItem
+{
+	type: string | "ByteArray" | "Integer"
+	value: string
+}
+interface IApplogTx
+{
+	txid: string
+	vmstate: string
+	gas_consumed: string
+	stack: IStackItem[]
+	notifications: { contract: string, state: { type: string, value: IStackItem[] } }[]
+}
