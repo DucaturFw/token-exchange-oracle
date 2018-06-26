@@ -1,10 +1,10 @@
 import { disassemble } from "./neo-disassemble"
 
-const SHIT_TX = "0801e65c00000000000840420f000000000014f9e6e770af783d809bd1a65e1bb5b6042953bcac080303000000000000209b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc514dc98759406cc2130dcd0d93c4c6e8a82b55b454456c1096d616b654f6666657267bd097b2fcf70e1fd30a5c3ef51e662feeafeba01"
+const FAIL_TX = "0801e65c00000000000840420f000000000014f9e6e770af783d809bd1a65e1bb5b6042953bcac080303000000000000209b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc514dc98759406cc2130dcd0d93c4c6e8a82b55b454456c1096d616b654f6666657267bd097b2fcf70e1fd30a5c3ef51e662feeafeba01"
 
 test('parse "make offer" transaction script', () =>
 {
-	let tx = SHIT_TX
+	let tx = FAIL_TX
 	let entries = disassemble(tx)
 	expect(entries).toBeDefined()
 	expect(entries.length).toEqual(10)
@@ -22,11 +22,11 @@ test('parse "make offer" transaction script', () =>
 	expect(entries[9].name).toEqual("APPCALL")
 })
 
-import { parseContractCall, parseExchangeCall } from "./neo"
+import { parseContractCall, parseExchangeCall } from "./neo-vm"
 
 test('parse contract call', () =>
 {
-	let tx = SHIT_TX
+	let tx = FAIL_TX
 	let m = parseContractCall(tx)
 	expect(m).toBeDefined()
 	if (!m)
@@ -38,7 +38,7 @@ test('parse contract call', () =>
 })
 test('parse incorrect exchange contract call', () =>
 {
-	let tx = SHIT_TX
+	let tx = FAIL_TX
 	let m = parseExchangeCall(tx)
 	expect(m).toBeUndefined()
 })
