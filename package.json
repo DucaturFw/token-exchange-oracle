@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "node js/app.js",
+    "neo-disassemble": "node js/neo/cli-disassemble.js",
     "test": "jest"
   },
   "dependencies": {
