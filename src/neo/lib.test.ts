@@ -2,6 +2,7 @@ import "jest-extended"
 
 import { get_last_transactions_by_address, get_transactions, getApplog } from "./lib"
 import appConfig from "../config"
+import { HALT_BREAK } from "./neo-vm";
 
 describe('neoscan getting info', () =>
 {
@@ -62,7 +63,7 @@ describe('applog getting info', () =>
 		{
 			expect(tx).toBeDefined()
 			expect(tx.txid).toEqual(txid)
-			expect(tx.vmstate).toEqual("HALT, BREAK")
+			expect(tx.vmstate).toEqual(HALT_BREAK)
 			expect(tx.stack).toBeArray()
 			expect(tx.stack).not.toBeEmpty()
 			let ret = tx.stack.pop()

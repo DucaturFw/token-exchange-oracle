@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("jest-extended");
 var lib_1 = require("./lib");
 var config_1 = __importDefault(require("../config"));
+var neo_vm_1 = require("./neo-vm");
 describe('neoscan getting info', function () {
     it('should get address transactions', function (done) {
         lib_1.get_last_transactions_by_address(config_1.default.neo.contractAddr, function (err, res) {
@@ -46,7 +47,7 @@ describe('applog getting info', function () {
         lib_1.getApplog(txid).then(function (tx) {
             expect(tx).toBeDefined();
             expect(tx.txid).toEqual(txid);
-            expect(tx.vmstate).toEqual("HALT, BREAK");
+            expect(tx.vmstate).toEqual(neo_vm_1.HALT_BREAK);
             expect(tx.stack).toBeArray();
             expect(tx.stack).not.toBeEmpty();
             var ret = tx.stack.pop();
