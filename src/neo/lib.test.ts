@@ -8,7 +8,7 @@ describe('neoscan getting info', () =>
 {
 	it('should get address transactions', done =>
 	{
-		get_last_transactions_by_address(appConfig.neo.contractAddr, (err, res) =>
+		get_last_transactions_by_address(appConfig.neo.contract.addr, (err, res) =>
 		{
 			expect(err).toBeFalsy()
 			expect(res).toBeArray()
@@ -23,7 +23,7 @@ describe('neoscan getting info', () =>
 	})
 	it('should get transactions list', done =>
 	{
-		get_last_transactions_by_address(appConfig.neo.contractAddr, (err, res) =>
+		get_last_transactions_by_address(appConfig.neo.contract.addr, (err, res) =>
 		{
 			expect(err).toBeFalsy()
 			expect(res).toBeArray()

@@ -9,7 +9,7 @@ var config_1 = __importDefault(require("../config"));
 var neo_vm_1 = require("./neo-vm");
 describe('neoscan getting info', function () {
     it('should get address transactions', function (done) {
-        lib_1.get_last_transactions_by_address(config_1.default.neo.contractAddr, function (err, res) {
+        lib_1.get_last_transactions_by_address(config_1.default.neo.contract.addr, function (err, res) {
             expect(err).toBeFalsy();
             expect(res).toBeArray();
             if (!res)
@@ -19,7 +19,7 @@ describe('neoscan getting info', function () {
         });
     });
     it('should get transactions list', function (done) {
-        lib_1.get_last_transactions_by_address(config_1.default.neo.contractAddr, function (err, res) {
+        lib_1.get_last_transactions_by_address(config_1.default.neo.contract.addr, function (err, res) {
             expect(err).toBeFalsy();
             expect(res).toBeArray();
             if (!res)

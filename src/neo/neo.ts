@@ -3,7 +3,7 @@ import appConfig from "../config"
 import { get_last_transactions_by_address, getTxsWithLogs } from "./lib"
 import { parseExchangeCall, checkTxSuccess } from "./neo-vm"
 
-export let NEO_CONTRACT_ADDR = appConfig.neo.contractAddr
+export let NEO_CONTRACT_ADDR = appConfig.neo.contract.addr
 
 export function getNeoTransfers(callback: (err: any, transfers: ICrossExchangeTransfer[] | undefined) => void)
 {

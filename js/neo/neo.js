@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var config_1 = __importDefault(require("../config"));
 var lib_1 = require("./lib");
 var neo_vm_1 = require("./neo-vm");
-exports.NEO_CONTRACT_ADDR = config_1.default.neo.contractAddr;
+exports.NEO_CONTRACT_ADDR = config_1.default.neo.contract.addr;
 function getNeoTransfers(callback) {
     lib_1.get_last_transactions_by_address(exports.NEO_CONTRACT_ADDR, function (err, txs) {
         if (err)
