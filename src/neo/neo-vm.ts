@@ -32,29 +32,35 @@ export function checkTxSuccess(applog: IApplogTx): boolean
 	return true
 }
 
-export function parseExchangeCall(script: string)
+export let juxt = (...funcs: ((a:string) => any)[]) => (...args: any[]) => args.map((x, idx) => funcs[idx](x))
+export let CONV = {
+	str: (x: string) => neon_u.hexstring2str(x),
+	addr: (x: string) => wallet.getAddressFromScriptHash(neon_u.reverseHex(x)),
+	int: (x: string) => neon_u.fixed82num(x),
+}
+
+export let parseExchangeCall = parseAnyCall("exchange", CONV.addr, CONV.int, CONV.str, CONV.str)
+export let parseMintCall = parseAnyCall("mintTokens", CONV.addr, CONV.int, CONV.str, CONV.str)
+
+export function parseAnyCall(method: string, ...args: ((a: string) => any)[])
 {
-	let call = parseContractCall(script)
-	if (!call)
-		return undefined
-	if (call.method != "exchange")
-		return undefined
-	if (call.params.length != 4)
-		return undefined
-	
-	// console.log(call)
-	
-	let juxt = (...funcs: ((a:string) => any)[]) => (...args: any[]) => args.map((x, idx) => funcs[idx](x))
-	let hex = (x: string) => neon_u.hexstring2str(x)
-	let addr = (x: string) => wallet.getAddressFromScriptHash(neon_u.reverseHex(x))
-	// let int = (x: string) => neon_u.Fixed8.fromHex(x)
-	let int = (x: string) => neon_u.fixed82num(x)
-	let exchArgs = juxt(addr, int, hex, hex)
-	return {
-		method: call.method,
-		params: exchArgs.apply(null, call.params)
+	return (script: string) =>
+	{
+		let call = parseContractCall(script)
+		if (!call)
+			return undefined
+		if (call.method != method)
+			return undefined
+		if (call.params.length != args.length)
+			return undefined
+		
+		return {
+			method,
+			params: juxt(...args)(...call.params)
+		}
 	}
 }
+
 export function parseContractCall(script: string)
 {
 	let asm = disassemble(script)

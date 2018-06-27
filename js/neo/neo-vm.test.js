@@ -48,6 +48,19 @@ test('parse exchange contract call #2 — fail on python type error', function (
     expect(ec.params[2]).toEqual("eos");
     expect(ec.params[3]).not.toEqual("tester3");
 });
+test('parse mint contract call', function () {
+    var txScript = '013003656f7308404b4c000000000014f149f74cf5fa1d61c11a5b1a90ccb7871ad7c32754c10a6d696e74546f6b656e73678adc2546282d56f373b31533d4326fcd18484efe';
+    var ec = neo_vm_1.parseMintCall(txScript);
+    expect(ec).toBeDefined();
+    if (!ec)
+        return;
+    expect(ec.method).toEqual('mintTokens');
+    expect(ec.params).toHaveLength(4);
+    expect(ec.params[0]).toEqual('AKQ8cCUoE99ncnRRbaYPit3pV3g58A6FJk');
+    expect(ec.params[1]).toEqual(0.05);
+    expect(ec.params[2]).toEqual("eos");
+    expect(ec.params[3]).toEqual("0");
+});
 test('check transaction call result #1', function () {
     var tx = { "txid": "0xb2daa1fefd2ae1d0d3896525c9b9b0d07ac24b2547c43d6fb8ec9e35d3f1428a", "vmstate": "HALT, BREAK", "gas_consumed": "1.796", "stack": [{ "type": "Integer", "value": "1" }], "notifications": [{ "contract": "0xfe4e4818cd6f32d43315b373f3562d284625dc8a", "state": { "type": "Array", "value": [{ "type": "ByteArray", "value": "65786368616e6765" }, { "type": "ByteArray", "value": "27c3d71a87b7cc901a5b1ac1611dfaf54cf749f1" }, { "type": "ByteArray", "value": "b80b" }, { "type": "ByteArray", "value": "656f73" }, { "type": "ByteArray", "value": "746573746572332e" }] } }] };
     expect(neo_vm_1.checkTxSuccess(tx)).toEqual(true);

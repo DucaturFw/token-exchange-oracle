@@ -24,39 +24,46 @@ function checkTxSuccess(applog) {
     return true;
 }
 exports.checkTxSuccess = checkTxSuccess;
-function parseExchangeCall(script) {
-    var call = parseContractCall(script);
-    if (!call)
-        return undefined;
-    if (call.method != "exchange")
-        return undefined;
-    if (call.params.length != 4)
-        return undefined;
-    // console.log(call)
-    var juxt = function () {
-        var funcs = [];
+exports.juxt = function () {
+    var funcs = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        funcs[_i] = arguments[_i];
+    }
+    return function () {
+        var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            funcs[_i] = arguments[_i];
+            args[_i] = arguments[_i];
         }
-        return function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
-            return args.map(function (x, idx) { return funcs[idx](x); });
+        return args.map(function (x, idx) { return funcs[idx](x); });
+    };
+};
+exports.CONV = {
+    str: function (x) { return neon_js_1.u.hexstring2str(x); },
+    addr: function (x) { return neon_js_1.wallet.getAddressFromScriptHash(neon_js_1.u.reverseHex(x)); },
+    int: function (x) { return neon_js_1.u.fixed82num(x); },
+};
+exports.parseExchangeCall = parseAnyCall("exchange", exports.CONV.addr, exports.CONV.int, exports.CONV.str, exports.CONV.str);
+exports.parseMintCall = parseAnyCall("mintTokens", exports.CONV.addr, exports.CONV.int, exports.CONV.str, exports.CONV.str);
+function parseAnyCall(method) {
+    var args = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        args[_i - 1] = arguments[_i];
+    }
+    return function (script) {
+        var call = parseContractCall(script);
+        if (!call)
+            return undefined;
+        if (call.method != method)
+            return undefined;
+        if (call.params.length != args.length)
+            return undefined;
+        return {
+            method: method,
+            params: exports.juxt.apply(void 0, args).apply(void 0, call.params)
         };
     };
-    var hex = function (x) { return neon_js_1.u.hexstring2str(x); };
-    var addr = function (x) { return neon_js_1.wallet.getAddressFromScriptHash(neon_js_1.u.reverseHex(x)); };
-    // let int = (x: string) => neon_u.Fixed8.fromHex(x)
-    var int = function (x) { return neon_js_1.u.fixed82num(x); };
-    var exchArgs = juxt(addr, int, hex, hex);
-    return {
-        method: call.method,
-        params: exchArgs.apply(null, call.params)
-    };
 }
-exports.parseExchangeCall = parseExchangeCall;
+exports.parseAnyCall = parseAnyCall;
 function parseContractCall(script) {
     var asm = neo_disassemble_1.disassemble(script);
     // console.log(asm)

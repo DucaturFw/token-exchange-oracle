@@ -1,6 +1,6 @@
 import "jest-extended"
 
-import { parseContractCall, parseExchangeCall, checkTxSuccess } from "./neo-vm"
+import { parseContractCall, parseExchangeCall, checkTxSuccess, parseMintCall } from "./neo-vm"
 
 const FAIL_TX = "0801e65c00000000000840420f000000000014f9e6e770af783d809bd1a65e1bb5b6042953bcac080303000000000000209b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc514dc98759406cc2130dcd0d93c4c6e8a82b55b454456c1096d616b654f6666657267bd097b2fcf70e1fd30a5c3ef51e662feeafeba01"
 let NORM_TX = "03307830034554485a224151764273374e4472783937716a5031547a64547864436e636847616b38626a64740865786368616e67656759b6f25c66b8229875bee6131363114f2c32668d"
@@ -58,6 +58,21 @@ test('parse exchange contract call #2 — fail on python type error', () =>
 	expect(ec.params[1]).toEqual(0.05)
 	expect(ec.params[2]).toEqual("eos")
 	expect(ec.params[3]).not.toEqual("tester3")
+})
+test('parse mint contract call', () =>
+{
+	let txScript = '013003656f7308404b4c000000000014f149f74cf5fa1d61c11a5b1a90ccb7871ad7c32754c10a6d696e74546f6b656e73678adc2546282d56f373b31533d4326fcd18484efe'
+	let ec = parseMintCall(txScript)
+	expect(ec).toBeDefined()
+	if (!ec)
+		return
+	
+	expect(ec.method).toEqual('mintTokens')
+	expect(ec.params).toHaveLength(4)
+	expect(ec.params[0]).toEqual('AKQ8cCUoE99ncnRRbaYPit3pV3g58A6FJk')
+	expect(ec.params[1]).toEqual(0.05)
+	expect(ec.params[2]).toEqual("eos")
+	expect(ec.params[3]).toEqual("0")
 })
 
 test('check transaction call result #1', () =>
