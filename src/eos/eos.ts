@@ -13,7 +13,7 @@ interface IEosExchangeTransfer
 	txid: string
 }
 
-let CONTRACT_ADDR = appConfig.eos.contractAddr
+let CONTRACT_ADDR = appConfig.eos.contract.addr
 
 export function parseAmount(amount: string): { value: number, symbol: string }
 {

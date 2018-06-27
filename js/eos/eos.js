@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var lib_1 = require("./lib");
 var config_1 = __importDefault(require("../config"));
-var CONTRACT_ADDR = config_1.default.eos.contractAddr;
+var CONTRACT_ADDR = config_1.default.eos.contract.addr;
 function parseAmount(amount) {
     var _a = amount.split(' '), value = _a[0], symbol = _a[1];
     value = parseFloat(value);

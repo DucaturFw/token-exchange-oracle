@@ -3,7 +3,11 @@ export default require('../data/config.json') as {
 		pk: string
 		rpc: string
 		chainId: string
-		contractAddr: string
+		contract: {
+			addr: string
+			owner: string
+			owner_pk: string
+		}
 	},
 	eth: {
 		ws: string
