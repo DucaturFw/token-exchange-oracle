@@ -48,8 +48,21 @@ test('parse exchange contract call #2 — fail on python type error', function (
     expect(ec.params[2]).toEqual("eos");
     expect(ec.params[3]).not.toEqual("tester3");
 });
-test('parse mint contract call', function () {
+test('parse mint contract call with reverse hex error', function () {
     var txScript = '013003656f7308404b4c000000000014f149f74cf5fa1d61c11a5b1a90ccb7871ad7c32754c10a6d696e74546f6b656e73678adc2546282d56f373b31533d4326fcd18484efe';
+    var ec = neo_vm_1.parseMintCall(txScript);
+    expect(ec).toBeDefined();
+    if (!ec)
+        return;
+    expect(ec.method).toEqual('mintTokens');
+    expect(ec.params).toHaveLength(4);
+    expect(ec.params[0]).not.toEqual('AKQ8cCUoE99ncnRRbaYPit3pV3g58A6FJk');
+    expect(ec.params[1]).toEqual(0.05);
+    expect(ec.params[2]).toEqual("eos");
+    expect(ec.params[3]).toEqual("0");
+});
+test('parse mint contract call without reverse hex error', function () {
+    var txScript = '013003656f7308404b4c00000000001427c3d71a87b7cc901a5b1ac1611dfaf54cf749f154c10a6d696e74546f6b656e73678adc2546282d56f373b31533d4326fcd18484efe';
     var ec = neo_vm_1.parseMintCall(txScript);
     expect(ec).toBeDefined();
     if (!ec)
