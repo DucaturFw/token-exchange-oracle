@@ -1,4 +1,4 @@
-import Eos from "eosjs"
+import Eos, { IEosjsCallsParams, IEosContract } from "eosjs"
 import confjs from "../config"
 
 console.assert(confjs.eos.pk, "pk not found in config")
@@ -38,3 +38,21 @@ export let getTokenBalance = (account: string, tokenName: string = "SYS") =>
 			.map(x => x.balance)
 			.filter(x => x && x.endsWith(tokenName))
 			.map(x => parseFloat(x.substr(0, x.length - 3)))[0] || 0)
+type IProp<T> = T[keyof T]
+type IMethod<TArgs, TRes> = (args: TArgs, extra?: IEosjsCallsParams) => Promise<TRes>
+
+export function callContract<TContract extends IEosContract, TArgs>(contract: string, method: keyof TContract, args: TArgs, extra: IEosjsCallsParams): Promise<any>
+{
+	return new Promise((resolve, reject) =>
+	{
+		eos.contract<TContract>(contract, extra, (err, res) =>
+		{
+			if (err)
+				return reject(err)
+
+			let m = res[method] as IProp<TContract> & IMethod<TArgs, any>
+
+			return m(args, extra).then(resolve).catch(reject)
+		})
+	})
+}

@@ -41,3 +41,14 @@ exports.getTokenBalance = function (account, tokenName) {
         .filter(function (x) { return x && x.endsWith(tokenName); })
         .map(function (x) { return parseFloat(x.substr(0, x.length - 3)); })[0] || 0; });
 };
+function callContract(contract, method, args, extra) {
+    return new Promise(function (resolve, reject) {
+        exports.eos.contract(contract, extra, function (err, res) {
+            if (err)
+                return reject(err);
+            var m = res[method];
+            return m(args, extra).then(resolve).catch(reject);
+        });
+    });
+}
+exports.callContract = callContract;

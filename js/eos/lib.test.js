@@ -42,6 +42,22 @@ it('should open payment channel', function (done) {
         }).catch(function (err) { return done(err || "unknown promise error!"); });
     });
 }, 40000);
+it('should call contract', function (done) {
+    var auth = { authorization: "tester1", sign: true };
+    var PK = config_1.default.eos.pk;
+    var args = {
+        opener: 'tester1',
+        pub_key: eosjs_1.default.modules.ecc.privateToPublic(PK),
+        pair: "ETH",
+        quantity: "1.0000 SYS",
+        respondent: 'l2dex.code',
+        resp_key: eosjs_1.default.modules.ecc.privateToPublic(PK),
+    };
+    lib_1.callContract("l2dex.code", "open", args, auth).then(function (x) {
+        console.log(x);
+        done();
+    }).catch(done);
+}, 40000);
 it('should get table data', function (done) {
     lib_1.getTableRows("l2dex.code", "l2dex.code", "channels").then(function (x) {
         expect(x).toBeDefined();

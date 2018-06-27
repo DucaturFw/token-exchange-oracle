@@ -1,6 +1,6 @@
 import "jest-extended"
 
-import { eos, getTableRows, getTokenBalance } from "./lib"
+import { eos, getTableRows, getTokenBalance, callContract } from "./lib"
 import Eos, { IEosContract, IEosjsCallsParams } from "eosjs"
 import appConfig from "../config"
 
@@ -71,6 +71,28 @@ it('should open payment channel', done =>
 			done()
 		}).catch(err => done(err || "unknown promise error!"))
 	})
+}, 40000)
+
+it('should call contract', done =>
+{
+	let auth = { authorization: "tester1", sign: true }
+	let PK = appConfig.eos.pk
+
+	let args = {
+		opener: 'tester1',
+		pub_key: Eos.modules.ecc.privateToPublic(PK),
+		pair: "ETH",
+		quantity: "1.0000 SYS",
+		respondent: 'l2dex.code',
+		resp_key: Eos.modules.ecc.privateToPublic(PK),
+	}
+
+	callContract<IL2dexContract, typeof args>("l2dex.code", "open", args, auth).then(x =>
+	{
+		console.log(x)
+
+		done()
+	}).catch(done)
 }, 40000)
 
 it('should get table data', done =>
