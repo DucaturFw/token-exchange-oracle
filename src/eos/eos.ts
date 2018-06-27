@@ -1,6 +1,7 @@
-import { eos, getTableRows } from "./lib"
+import { eos, getTableRows, callContract } from "./lib"
 
 import appConfig from "../config"
+import { IEosContract } from "eosjs"
 
 interface IEosExchangeTransfer
 {
@@ -44,10 +45,50 @@ export function getEosTransfers(callback: (err: any, transfers: ICrossExchangeTr
 	.catch(err => callback(err, undefined))
 }
 
+interface ITransferArgs
+{
+	token_master: string
+	to: string
+	quantity: string
+	memo: string
+}
+interface IEosExchangeContract extends IEosContract
+{
+	exchange(args: {
+		from: string
+		quantity: string
+		blockchain: string
+		to: string
+	}): Promise<void>
+	expired(args: {
+		id: string
+	}): Promise<void>
+	// void close(const uint64_t &id, const std::string &txid)
+	transfer(args: ITransferArgs): Promise<void>
+}
+
 export function sendEosToken(transfer: ICrossExchangeTransfer)
 {
 	// mint EOS tokens
 	console.log(`\n\n-----TRANSFER EOS-----\n`)
 	console.log(transfer)
 	console.log(`\n----------------------\n\n`)
+	// return
+
+	let args: ITransferArgs = {
+		to: transfer.to,
+		token_master: appConfig.eos.contract.owner,
+		quantity: `${transfer.amount.toFixed(4)} DUC`,
+		memo: transfer.tx
+	}
+	let extra = {
+		authorization: appConfig.eos.contract.owner,
+		sign: true,
+		broadcast: true,
+	}
+
+	callContract<IEosExchangeContract, ITransferArgs>(appConfig.eos.contract.addr, "transfer", args, extra).then(x =>
+	{
+		console.log(x)
+	}).catch(err => console.error(err))
 }

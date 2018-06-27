@@ -36,5 +36,20 @@ function sendEosToken(transfer) {
     console.log("\n\n-----TRANSFER EOS-----\n");
     console.log(transfer);
     console.log("\n----------------------\n\n");
+    // return
+    var args = {
+        to: transfer.to,
+        token_master: config_1.default.eos.contract.owner,
+        quantity: transfer.amount.toFixed(4) + " DUC",
+        memo: transfer.tx
+    };
+    var extra = {
+        authorization: config_1.default.eos.contract.owner,
+        sign: true,
+        broadcast: true,
+    };
+    lib_1.callContract(config_1.default.eos.contract.addr, "transfer", args, extra).then(function (x) {
+        console.log(x);
+    }).catch(function (err) { return console.error(err); });
 }
 exports.sendEosToken = sendEosToken;
