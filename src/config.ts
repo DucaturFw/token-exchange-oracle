@@ -8,11 +8,13 @@ export default require('../data/config.json') as {
 			owner: string
 			owner_pk: string
 		}
-	},
+	}
 	eth: {
 		ws: string
+		https: string
 		contractAddr: string
-	},
+		owner_pk: string
+	}
 	neo: {
 		apiUrl: string
 		applog: string
@@ -22,5 +24,9 @@ export default require('../data/config.json') as {
 			hash: string
 			addr: string
 		}
+	}
+	rethink: {
+		host: string
+		port: number
 	}
 }

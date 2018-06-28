@@ -1,28 +1,68 @@
 import Web3 from "web3"
 import { EventLog } from "web3/types"
 import appConfig from "../config"
+import r from "rethinkdb"
 
 let ETH_ABI = require('../../data/ducatur-eth.abi.json')
-let ETH_CONTRACT_ADDR = appConfig.eth.contractAddr
 
-let web3 = new Web3(new Web3.providers.WebsocketProvider(appConfig.eth.ws))
+let web3 = new Web3(new Web3.providers.HttpProvider(appConfig.eth.https))
 
-let events = [] as EventLog[]
+let events = [] as IDBEvent<IExchangeReturn>[]
 
-web3.eth.net.isListening().then(b =>
+let connected = false
+
+let dbpromise = r.connect(appConfig.rethink).then(connection =>
 {
-	// console.log(`connected: ${b}`)
+	return r.db('ethereum').table('contractCalls')
+		.orderBy({
+			index: r.desc('chronological')
+		})
+		.filter({
+			event:"BlockchainExchange",
+			address: appConfig.eth.contractAddr
+		}).changes({includeInitial: true}).run(connection)
+})
 
-	let ctr = new web3.eth.Contract(ETH_ABI, ETH_CONTRACT_ADDR)
-	ctr.events.BlockchainExchange({ fromBlock: 0 }, (err, ev) => err ? console.error(err) : events.push(ev))
-}).catch(err => console.error(err))
+Promise.all([dbpromise, web3.eth.net.isListening()]).then(([cursor, ethConnected]) =>
+{
+	console.log("connected ETH!")
+	connected = true
+	
+	web3.eth.accounts.wallet.add(appConfig.eth.owner_pk)
 
-function eventToCXTransfer(event: EventLog): ICrossExchangeTransfer
+	cursor.each<{ new_val: IDBEvent<IExchangeReturn> }>((err, row) =>
+	{
+		if (err)
+			return console.error(err)
+		
+		events.push(row.new_val)
+	})
+})
+interface IExchangeReturn
+{
+	0: string
+	1: string
+	2: string
+	3: string
+	adr: string
+	from: string
+	newNetwork: string
+	value: string
+}
+interface IDBEvent<IReturnValues> extends EventLog
+{
+	id: string
+	removed: boolean
+	returnValues: IReturnValues
+	signature: string
+}
+
+function eventToCXTransfer(event: IDBEvent<IExchangeReturn>): ICrossExchangeTransfer
 {
 	return {
 		blockchainFrom: "eth",
 		from: event.returnValues[0],
-		amount: event.returnValues[1],
+		amount: parseFloat(event.returnValues[1]),
 		blockchainTo: bcIdxToName(event.returnValues[2]),
 		to: event.returnValues[3],
 		tx: event.transactionHash
@@ -43,7 +83,10 @@ function bcIdxToName(idx: number | string)
 
 export function getEthTransfers(callback: (err: any, transfers: ICrossExchangeTransfer[] | undefined) => void)
 {
+	if (connected)
 	return callback(undefined, events.map(eventToCXTransfer))
+	else
+		setTimeout(() => getEthTransfers(callback), 100)
 }
 export function sendEthToken(transfer: ICrossExchangeTransfer)
 {

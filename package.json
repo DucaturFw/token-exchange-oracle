@@ -5,16 +5,18 @@
     "test": "jest"
   },
   "dependencies": {
-    "@cityofzion/neon-js": "^3.9.1",
-    "@types/node": "^10.3.4",
-    "@types/superagent": "^3.8.1",
-    "@types/web3": "^1.0.0",
     "eosjs": "^15.0.0",
+    "rethinkdb": "^2.3.3",
     "superagent": "^3.8.3",
     "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
+    "@cityofzion/neon-js": "^3.9.1",
+    "@types/node": "^10.3.4",
+    "@types/superagent": "^3.8.1",
+    "@types/web3": "^1.0.0",
     "@types/jest": "^23.1.1",
+    "@types/rethinkdb": "^2.3.11",
     "jest-extended": "^0.7.2"
   }
 }
