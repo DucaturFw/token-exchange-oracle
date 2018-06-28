@@ -1,43 +1,53 @@
 import Web3 from "web3"
-import { EventLog } from "web3/types"
+import { EventLog, Contract, Account } from "web3/types"
 import appConfig from "../config"
-import r from "rethinkdb"
+import r, { Cursor } from "rethinkdb"
 
-let ETH_ABI = require('../../data/ducatur-eth.abi.json')
+const ETH_ABI = require('../../data/ducatur-eth.abi.json')
 
-let web3 = new Web3(new Web3.providers.HttpProvider(appConfig.eth.https))
+const DUCAT_PRECISION = 1e4
 
+let web3: Web3
+let CONTRACT: Contract
+let SENDER: Account
 let events = [] as IDBEvent<IExchangeReturn>[]
 
-let connected = false
-
-let dbpromise = r.connect(appConfig.rethink).then(connection =>
+export function init()
 {
-	return r.db('ethereum').table('contractCalls')
-		.orderBy({
-			index: r.desc('chronological')
-		})
-		.filter({
-			event:"BlockchainExchange",
-			address: appConfig.eth.contractAddr
-		}).changes({includeInitial: true}).run(connection)
-})
-
-Promise.all([dbpromise, web3.eth.net.isListening()]).then(([cursor, ethConnected]) =>
-{
-	console.log("connected ETH!")
-	connected = true
+	if (web3)
+		return
 	
-	web3.eth.accounts.wallet.add(appConfig.eth.owner_pk)
+	web3 = new Web3(new Web3.providers.HttpProvider(appConfig.eth.https))
 
-	cursor.each<{ new_val: IDBEvent<IExchangeReturn> }>((err, row) =>
+	r.connect(appConfig.rethink).then(connection =>
 	{
-		if (err)
-			return console.error(err)
+		console.log("connected ETH!")
+		CONTRACT = new web3.eth.Contract(ETH_ABI, appConfig.eth.contractAddr)
+		SENDER = web3.eth.accounts.privateKeyToAccount(appConfig.eth.owner_pk)
+		web3.eth.accounts.wallet.add(SENDER)
 		
-		events.push(row.new_val)
+		r.db('ethereum').table('contractCalls')
+			.orderBy({
+				index: r.desc('chronological')
+			})
+			.filter({
+				event: "BlockchainExchange",
+				address: appConfig.eth.contractAddr
+			})
+			.changes({includeInitial: true})
+			.run(connection)
+			.then(cursor =>
+			{
+				cursor.each<{ new_val: IDBEvent<IExchangeReturn> }>((err, row) =>
+				{
+					if (err)
+						return console.error(err)
+					
+					events.push(row.new_val)
+				})
+			})
 	})
-})
+}
 interface IExchangeReturn
 {
 	0: string
@@ -81,12 +91,17 @@ function bcIdxToName(idx: number | string)
 	return (map as any)[idx]
 }
 
+const isConnected = () => !!CONTRACT
+
 export function getEthTransfers(callback: (err: any, transfers: ICrossExchangeTransfer[] | undefined) => void)
 {
-	if (connected)
-	return callback(undefined, events.map(eventToCXTransfer))
+	if (!web3)
+		init()
+	
+	if (isConnected())
+		setTimeout(() => callback(undefined, events.map(eventToCXTransfer)), 1)
 	else
-		setTimeout(() => getEthTransfers(callback), 100)
+		setTimeout(() => getEthTransfers(callback), 20)
 }
 export function sendEthToken(transfer: ICrossExchangeTransfer)
 {
@@ -94,4 +109,33 @@ export function sendEthToken(transfer: ICrossExchangeTransfer)
 	console.log(`\n\n-----TRANSFER ETH-----\n`)
 	console.log(transfer)
 	console.log(`\n----------------------\n\n`)
+	// return
+	
+	let from = SENDER.address
+	let m = CONTRACT.methods.mint(transfer.to, Math.floor(transfer.amount * DUCAT_PRECISION))
+	// let abi = m.encodeABI()
+	// m.estimateGas({gas:1e18.toString()}).then(x => console.log(x))
+	// return
+	// ctr.methods.totalSupply().call().then(x => console.log(`total supply: ${x}`))
+
+	m.send({
+		from,
+		gas: 300000,
+		gasPrice: 5
+	}).then(x => console.log(x)).catch(err => console.error(err))
+	/* return
+
+	web3.eth.signTransaction({
+		from,
+		data: abi,
+	}).then(x => console.log(x)).catch(err => console.error(err))
+	return
+	web3.eth.sendTransaction({
+		to: appConfig.eth.contractAddr,
+		from,
+		data: abi
+	}).then(x => console.log(x)).catch(err => console.error(err)) */
+
+// 0x40c10f1900000000000000000000000060903cda8643805f9567a083c1734e139fe7dad20000000000000000000000000000000000000000000000000000000000000000
+	
 }
