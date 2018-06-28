@@ -113,29 +113,9 @@ export function sendEthToken(transfer: ICrossExchangeTransfer)
 	
 	let from = SENDER.address
 	let m = CONTRACT.methods.mint(transfer.to, Math.floor(transfer.amount * DUCAT_PRECISION))
-	// let abi = m.encodeABI()
-	// m.estimateGas({gas:1e18.toString()}).then(x => console.log(x))
-	// return
-	// ctr.methods.totalSupply().call().then(x => console.log(`total supply: ${x}`))
-
 	m.send({
 		from,
 		gas: 300000,
 		gasPrice: 5
 	}).then(x => console.log(x)).catch(err => console.error(err))
-	/* return
-
-	web3.eth.signTransaction({
-		from,
-		data: abi,
-	}).then(x => console.log(x)).catch(err => console.error(err))
-	return
-	web3.eth.sendTransaction({
-		to: appConfig.eth.contractAddr,
-		from,
-		data: abi
-	}).then(x => console.log(x)).catch(err => console.error(err)) */
-
-// 0x40c10f1900000000000000000000000060903cda8643805f9567a083c1734e139fe7dad20000000000000000000000000000000000000000000000000000000000000000
-	
 }
