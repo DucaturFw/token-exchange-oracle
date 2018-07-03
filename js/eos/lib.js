@@ -35,7 +35,7 @@ function getTableRows(code, scope, table, json) {
 exports.getTableRows = getTableRows;
 exports.getTokenBalance = function (account, tokenName) {
     if (tokenName === void 0) { tokenName = "SYS"; }
-    return getTableRows("eosio.token", account, "accounts")
+    return getTableRows(config_1.default.eos.defaults.eosio_token, account, "accounts")
         .then(function (res) { return res.rows
         .map(function (x) { return x.balance; })
         .filter(function (x) { return x && x.endsWith(tokenName); })

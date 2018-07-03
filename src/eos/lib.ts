@@ -33,7 +33,7 @@ export function getTableRows<T>(code: string, scope: string, table: string, json
 }
 
 export let getTokenBalance = (account: string, tokenName: string = "SYS") =>
-	getTableRows<{ balance: string }>("eosio.token", account, "accounts")
+	getTableRows<{ balance: string }>(confjs.eos.defaults.eosio_token, account, "accounts")
 		.then(res => res.rows
 			.map(x => x.balance)
 			.filter(x => x && x.endsWith(tokenName))
