@@ -31,14 +31,19 @@ export function getEosTransfers(callback: (err: any, transfers: ICrossExchangeTr
 	getTableRows<IEosExchangeTransfer>(CONTRACT_ADDR, CONTRACT_ADDR, "exchanges").then(res =>
 	{
 		// console.log(res.rows)
+		let txs = res.rows
+		txs = txs
+			.filter(x => !x.txid) // already processed
+			.filter(x => parseFloat(x.amount) > 0) // incorrect amount (is this possible anyway?)
+			.filter(x => ["eth", "neo"].includes(x.blockchain.toLowerCase())) // incorrect blockchain (should we care?)
 
-		let transfers = res.rows.map(x => ({
+		let transfers = txs.map(x => ({
 			amount: parseAmount(x.amount).value,
 			to: x.to,
 			from: x.from,
 			tx: x.id + "",
 			blockchainFrom: 'eos',
-			blockchainTo: x.blockchain,
+			blockchainTo: x.blockchain.toLowerCase(),
 		}))
 		callback(undefined, transfers)
 	})

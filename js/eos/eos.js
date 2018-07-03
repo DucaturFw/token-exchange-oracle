@@ -18,13 +18,18 @@ exports.parseAmount = parseAmount;
 function getEosTransfers(callback) {
     lib_1.getTableRows(CONTRACT_ADDR, CONTRACT_ADDR, "exchanges").then(function (res) {
         // console.log(res.rows)
-        var transfers = res.rows.map(function (x) { return ({
+        var txs = res.rows;
+        txs = txs
+            .filter(function (x) { return !x.txid; }) // already processed
+            .filter(function (x) { return parseFloat(x.amount) > 0; }) // incorrect amount (is this possible anyway?)
+            .filter(function (x) { return ["eth", "neo"].includes(x.blockchain.toLowerCase()); }); // incorrect blockchain (should we care?)
+        var transfers = txs.map(function (x) { return ({
             amount: parseAmount(x.amount).value,
             to: x.to,
             from: x.from,
             tx: x.id + "",
             blockchainFrom: 'eos',
-            blockchainTo: x.blockchain,
+            blockchainTo: x.blockchain.toLowerCase(),
         }); });
         callback(undefined, transfers);
     })
