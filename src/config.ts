@@ -8,6 +8,9 @@ export default require('../data/config.json') as {
 			owner: string
 			owner_pk: string
 		}
+		defaults: {
+			eosio_token: string
+		}
 	}
 	eth: {
 		ws: string
