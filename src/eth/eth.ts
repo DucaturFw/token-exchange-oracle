@@ -1,7 +1,7 @@
 import Web3 from "web3"
 import { EventLog, Contract, Account } from "web3/types"
 import appConfig from "../config"
-import r, { Cursor } from "rethinkdb"
+import r from "rethinkdb"
 
 const ETH_ABI = require('../../data/ducatur-eth.abi.json')
 

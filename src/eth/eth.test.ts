@@ -1,6 +1,6 @@
 import "jest-extended"
 
-import { getEthTransfers, init, rCursor } from "./eth"
+import { getEthTransfers } from "./eth"
 import Web3 from "web3"
 import appConfig from "../config"
 

@@ -41,6 +41,6 @@ let DEFAULT_RPC = {
   }
 it('should connect to rpc', done =>
 {
-	let q = Neon.create.query({ method:"getblockcount" })
+	let q = Neon.create.query(<any>{ method:"getblockcount" })
 	q.execute(appConfig.neo.rpc).then(x => (/* console.log(x),  */done())).catch(done)
 })
