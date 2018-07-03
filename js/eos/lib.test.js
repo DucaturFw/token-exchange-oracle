@@ -15,85 +15,98 @@ it('should connect to testnet', function (done) {
         done();
     });
 });
-it('should get contract', function (done) {
-    lib_1.eos.contract('l2dex.code', function (err, res) {
-        expect(err).toBeFalsy();
-        expect(res).toBeDefined();
-        expect(res.fc).toBeDefined();
-        expect(res.fc.abi).toBeDefined();
-        done();
+describe.skip('l2dex', function () {
+    it('should get contract', function (done) {
+        lib_1.eos.contract('l2dex.code', function (err, res) {
+            expect(err).toBeFalsy();
+            expect(res).toBeDefined();
+            expect(res.fc).toBeDefined();
+            expect(res.fc.abi).toBeDefined();
+            done();
+        });
     });
-});
-it('should open payment channel', function (done) {
-    var auth = { authorization: "tester1", sign: true };
-    var PK = config_1.default.eos.pk;
-    lib_1.eos.contract('l2dex.code', auth, function (err, res) {
-        expect(err).toBeFalsy();
-        res.open({
+    it('should open payment channel', function (done) {
+        var auth = { authorization: "tester1", sign: true };
+        var PK = config_1.default.eos.pk;
+        lib_1.eos.contract('l2dex.code', auth, function (err, res) {
+            expect(err).toBeFalsy();
+            res.open({
+                opener: 'tester1',
+                pub_key: eosjs_1.default.modules.ecc.privateToPublic(PK),
+                pair: "ETH",
+                quantity: "1.0000 SYS",
+                respondent: 'l2dex.code',
+                resp_key: eosjs_1.default.modules.ecc.privateToPublic(PK),
+            }).then(function (x) {
+                // console.log(x)
+                done();
+            }).catch(function (err) { return done(err || "unknown promise error!"); });
+        });
+    }, 40000);
+    it('should call contract', function (done) {
+        var auth = { authorization: "tester1", sign: true };
+        var PK = config_1.default.eos.pk;
+        var args = {
             opener: 'tester1',
             pub_key: eosjs_1.default.modules.ecc.privateToPublic(PK),
             pair: "ETH",
             quantity: "1.0000 SYS",
             respondent: 'l2dex.code',
             resp_key: eosjs_1.default.modules.ecc.privateToPublic(PK),
-        }).then(function (x) {
-            // console.log(x)
+        };
+        lib_1.callContract("l2dex.code", "open", args, auth).then(function (x) {
+            console.log(x);
+            done();
+        }).catch(done);
+    }, 40000);
+    it('should get table data', function (done) {
+        lib_1.getTableRows("l2dex.code", "l2dex.code", "channels").then(function (x) {
+            expect(x).toBeDefined();
+            expect(x.rows).toBeDefined();
+            expect(x.rows.length).toBeGreaterThan(0);
+            // console.log(x.rows[0])
             done();
         }).catch(function (err) { return done(err || "unknown promise error!"); });
     });
-}, 40000);
-it('should call contract', function (done) {
-    var auth = { authorization: "tester1", sign: true };
-    var PK = config_1.default.eos.pk;
-    var args = {
-        opener: 'tester1',
-        pub_key: eosjs_1.default.modules.ecc.privateToPublic(PK),
-        pair: "ETH",
-        quantity: "1.0000 SYS",
-        respondent: 'l2dex.code',
-        resp_key: eosjs_1.default.modules.ecc.privateToPublic(PK),
-    };
-    lib_1.callContract("l2dex.code", "open", args, auth).then(function (x) {
-        console.log(x);
-        done();
-    }).catch(done);
-}, 40000);
-it('should get table data', function (done) {
-    lib_1.getTableRows("l2dex.code", "l2dex.code", "channels").then(function (x) {
-        expect(x).toBeDefined();
-        expect(x.rows).toBeDefined();
-        expect(x.rows.length).toBeGreaterThan(0);
-        // console.log(x.rows[0])
-        done();
-    }).catch(function (err) { return done(err || "unknown promise error!"); });
 });
-it('should read tokens balance', function (done) {
-    lib_1.getTokenBalance("tester1", "SYS").then(function (balance) {
-        expect(balance).toBeNumber();
-        expect(balance).toBeGreaterThanOrEqual(0);
-        done();
+describe.skip('local testnet', function () {
+    it('should read tokens balance', function (done) {
+        lib_1.getTokenBalance("tester1", "SYS").then(function (balance) {
+            expect(balance).toBeNumber();
+            expect(balance).toBeGreaterThanOrEqual(0);
+            done();
+        });
+    });
+    it('should mint tokens', function (done) {
+        var auth = { authorization: "eosio", sign: true, broadcast: true, debug: true };
+        var PK = config_1.default.eos.pk;
+        lib_1.getTokenBalance("tester1", "SYS").then(function (oldBalance) {
+            expect(oldBalance).toBeNumber();
+            lib_1.eos.contract("eosio.token", function (err, res) {
+                expect(err).toBeFalsy();
+                expect(res).toBeDefined();
+                res.issue({
+                    to: "tester1",
+                    quantity: "1.0000 SYS",
+                    memo: "eos.test." + Math.floor(Math.random() * 10000)
+                }, auth).then(function (__) {
+                    setTimeout(function () { return lib_1.getTokenBalance("tester1", "SYS").then(function (newBalance) {
+                        expect(newBalance).toBeNumber();
+                        expect(newBalance).toBeGreaterThan(oldBalance);
+                        expect(newBalance).toEqual(oldBalance + 1);
+                        done();
+                    }); }, 500);
+                });
+            });
+        });
     });
 });
-it('should mint tokens', function (done) {
-    var auth = { authorization: "eosio", sign: true, broadcast: true, debug: true };
-    var PK = config_1.default.eos.pk;
-    lib_1.getTokenBalance("tester1", "SYS").then(function (oldBalance) {
-        expect(oldBalance).toBeNumber();
-        lib_1.eos.contract("eosio.token", function (err, res) {
-            expect(err).toBeFalsy();
-            expect(res).toBeDefined();
-            res.issue({
-                to: "tester1",
-                quantity: "1.0000 SYS",
-                memo: "eos.test." + Math.floor(Math.random() * 10000)
-            }, auth).then(function (__) {
-                setTimeout(function () { return lib_1.getTokenBalance("tester1", "SYS").then(function (newBalance) {
-                    expect(newBalance).toBeNumber();
-                    expect(newBalance).toBeGreaterThan(oldBalance);
-                    expect(newBalance).toEqual(oldBalance + 1);
-                    done();
-                }); }, 500);
-            });
+describe('Jungle testnet', function () {
+    it('should read tokens balance', function (done) {
+        lib_1.getTokenBalance("ducatur", "EOS").then(function (balance) {
+            expect(balance).toBeNumber();
+            expect(balance).toBeGreaterThanOrEqual(0);
+            done();
         });
     });
 });
