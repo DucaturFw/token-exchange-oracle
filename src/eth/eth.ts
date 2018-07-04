@@ -2,6 +2,7 @@ import Web3 from "web3"
 import { EventLog, Contract, Account } from "web3/types"
 import appConfig from "../config"
 import r from "rethinkdb"
+import validator from "wallet-address-validator"
 
 const ETH_ABI = require('../../data/ducatur-eth.abi.json')
 
@@ -109,6 +110,10 @@ export function sendEthToken(transfer: ICrossExchangeTransfer)
 	console.log(`\n\n-----TRANSFER ETH-----\n`)
 	console.log(transfer)
 	console.log(`\n----------------------\n\n`)
+	
+	if (!validator.validate(transfer.to, "ETH"))
+		return console.log(`incorrect ETH address! ${transfer.to}`)
+	
 	// return
 	
 	let from = SENDER.address
