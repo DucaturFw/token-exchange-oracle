@@ -64,6 +64,8 @@ export function sendNeoToken(transfer: ICrossExchangeTransfer)
 	console.log(transfer)
 	console.log(`\n----------------------\n\n`)
 
+	// return
+
 	let neoscan = `${appConfig.neo.apiUrl}/api/main_net`
 
 	let ctrHash = appConfig.neo.contract.hash

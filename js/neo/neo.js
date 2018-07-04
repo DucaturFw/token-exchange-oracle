@@ -53,6 +53,7 @@ function sendNeoToken(transfer) {
     console.log("\n\n-----TRANSFER NEO-----\n");
     console.log(transfer);
     console.log("\n----------------------\n\n");
+    // return
     var neoscan = config_1.default.neo.apiUrl + "/api/main_net";
     var ctrHash = config_1.default.neo.contract.hash;
     var makeScript = tools_1.toScriptString(ctrHash);

@@ -78,6 +78,7 @@ export function sendEosToken(transfer: ICrossExchangeTransfer)
 	console.log(`\n\n-----TRANSFER EOS-----\n`)
 	console.log(transfer)
 	console.log(`\n----------------------\n\n`)
+
 	// return
 
 	let args: ITransferArgs = {
