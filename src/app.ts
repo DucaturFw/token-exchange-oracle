@@ -6,7 +6,7 @@ import { getEosTransfers, sendEosToken } from "./eos/eos"
 
 let processed: { [tx: string]: boolean } = { }
 
-setInterval(_poll_, 3000)
+_poll_()
 
 function _poll_()
 {
@@ -32,6 +32,9 @@ function _poll_()
 
 			transfers.forEach(tx =>
 			{
+				if (isNaN(tx.amount) || tx.amount <= 0)
+					return console.error(`tx amount is <= 0!`), console.error(tx)
+
 				let toBlock = (tx.blockchainTo || "").toLowerCase()
 				let p = processors[toBlock]
 				if (!p)
@@ -40,6 +43,7 @@ function _poll_()
 				processed[tx.tx] = true
 				return p(tx)
 			})
+			setTimeout(_poll_, 1000)
 		})
 		.catch(err => console.error(err))
 }

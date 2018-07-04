@@ -4,8 +4,8 @@ var tools_1 = require("./tools");
 var neo_1 = require("./neo/neo");
 var eth_1 = require("./eth/eth");
 var eos_1 = require("./eos/eos");
-var processed = {};
-setInterval(_poll_, 3000);
+var processed = { };
+_poll_();
 function _poll_() {
     console.log("poll " + new Date().toISOString());
     var processors = {
@@ -24,6 +24,8 @@ function _poll_() {
         .then(function (transfers) {
         // console.log(transfers)
         transfers.forEach(function (tx) {
+            if (isNaN(tx.amount) || tx.amount <= 0)
+                return console.error("tx amount is <= 0!"), console.error(tx);
             var toBlock = (tx.blockchainTo || "").toLowerCase();
             var p = processors[toBlock];
             if (!p)
@@ -31,6 +33,7 @@ function _poll_() {
             processed[tx.tx] = true;
             return p(tx);
         });
+        setTimeout(_poll_, 1000);
     })
         .catch(function (err) { return console.error(err); });
 }
