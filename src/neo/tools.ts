@@ -68,7 +68,7 @@ export function signRawTx(acc: string | Account, contractTxHex: string): tx.Tran
 
 	// client.sendRawTransaction(txn).then(x => console.log(x)).catch(err => console.error(err))
 }
-export function txDeployContract(author: string | Account, contractHex: string)
+/* export function txDeployContract(author: string | Account, contractHex: string)
 {
 	let acc = (typeof author === "string") ? Neon.create.account(author) : author
 	return api.neoscan.getBalance(NET_NAME, acc.address).then(balance =>
@@ -77,7 +77,7 @@ export function txDeployContract(author: string | Account, contractHex: string)
 		let txn = tx.Transaction.createInvocationTx(balance, [], contractHex, 500, {})
 		return txn
 	})
-}
+} */
 
 export interface IJRPCResp<T>
 {
