@@ -36,7 +36,7 @@ declare module "eosjs"
 		pushTransactions(...args: any[]): any
 		getActions(...args: any[]): any
 		getControlledAccounts(...args: any[]): any
-		getKeyAccounts(...args: any[]): any
+		getKeyAccounts(...args: any[]): Promise<{account_names: string[]}>
 		getTransaction(...args: any[]): any
 		createTransaction(...args: any[]): any
 		transaction(...args: any[]): any
