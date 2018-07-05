@@ -10,11 +10,11 @@ function _poll_() {
     console.log("poll " + new Date().toISOString());
     var processors = {
         eth: eth_1.sendEthToken,
-        neo: neo_1.sendNeoToken,
+        // neo: sendNeoToken,
         eos: eos_1.sendEosToken,
     };
     Promise.all([
-        tools_1.ignoreError(tools_1.promisify(neo_1.getNeoTransfers), [], function (err) { return console.log("neo transfers couldn't be loaded: " + err); }),
+        // ignoreError(promisify(getNeoTransfers), [], err => console.log(`neo transfers couldn't be loaded: ${err}`)),
         tools_1.ignoreError(tools_1.promisify(eth_1.getEthTransfers), [], function (err) { return console.log("eth transfers couldn't be loaded: " + err); }),
         tools_1.ignoreError(tools_1.promisify(eos_1.getEosTransfers), [], function (err) { return console.log("eos transfers couldn't be loaded: " + err); }),
     ])

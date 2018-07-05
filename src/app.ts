@@ -14,12 +14,12 @@ function _poll_()
 
 	let processors = {
 		eth: sendEthToken,
-		neo: sendNeoToken,
+		// neo: sendNeoToken,
 		eos: sendEosToken,
 	} as { [bc: string]: (tx: ICrossExchangeTransfer) => void }
 
 	Promise.all([
-		ignoreError(promisify(getNeoTransfers), [], err => console.log(`neo transfers couldn't be loaded: ${err}`)),
+		// ignoreError(promisify(getNeoTransfers), [], err => console.log(`neo transfers couldn't be loaded: ${err}`)),
 		ignoreError(promisify(getEthTransfers), [], err => console.log(`eth transfers couldn't be loaded: ${err}`)),
 		ignoreError(promisify(getEosTransfers), [], err => console.log(`eos transfers couldn't be loaded: ${err}`)),
 	])
