@@ -23,17 +23,22 @@ function _poll_() {
         .then(function (transfers) { return transfers.filter(function (trs) { return !processed[trs.tx]; }); }) // skip already processed transactions
         .then(function (transfers) {
         // console.log(transfers)
-        transfers.forEach(function (tx) {
+        var bcTransfers = transfers.reduce(function (acc, tx) {
             if (isNaN(tx.amount) || tx.amount <= 0)
-                return console.error("tx amount is <= 0!"), console.error(tx);
+                return console.error("tx amount is <= 0!"), console.error(tx), acc;
             var toBlock = (tx.blockchainTo || "").toLowerCase();
-            var p = processors[toBlock];
-            if (!p)
-                return console.error("no such target blockchain! " + tx.blockchainTo);
-            processed[tx.tx] = true;
-            return p(tx);
-        });
-        setTimeout(_poll_, 1000);
+            (acc[toBlock] || (acc[toBlock] = [])).push(tx);
+            return acc;
+        }, {});
+        Promise.all(Object.keys(bcTransfers).map(function (bc) {
+            var m = processors[bc];
+            if (!m)
+                return console.error("no such target blockchain! " + bc), Promise.resolve();
+            var next = function (cur) { return (console.log('next'), processed[cur.tx] = true, m(cur)); };
+            return bcTransfers[bc].reduce(function (prev, cur) { return prev
+                .then(function (x) { return (console.log("successfully sent tx#" + x), next(cur)); })
+                .catch(function (err) { return (console.error(err), next(cur)); }); }, Promise.resolve()).then(function (x) { return console.log("sent all " + bc.toUpperCase()); });
+        })).then(function (x) { return (console.log('sent all transactions'), setTimeout(_poll_, 1000)); });
     })
         .catch(function (err) { return console.error(err); });
 }

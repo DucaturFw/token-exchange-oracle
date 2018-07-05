@@ -79,14 +79,15 @@ function sendEthToken(transfer) {
     console.log(transfer);
     console.log("\n----------------------\n\n");
     if (!wallet_address_validator_1.default.validate(transfer.to, "ETH"))
-        return console.log("incorrect ETH address! " + transfer.to);
+        return Promise.reject("incorrect ETH address! " + transfer.to);
     // return
     var from = SENDER.address;
     var m = CONTRACT.methods.mint(transfer.to, Math.floor(transfer.amount * DUCAT_PRECISION));
-    m.send({
+    console.log("sending " + m.encodeABI());
+    return m.send({
         from: from,
         gas: 300000,
-        gasPrice: 5
-    }).then(function (x) { return console.log(x); }).catch(function (err) { return console.error(err); });
+        gasPrice: web3.utils.toWei('50', "gwei")
+    }).then(function (x) { return Promise.resolve(x); });
 }
 exports.sendEthToken = sendEthToken;

@@ -104,7 +104,7 @@ export function getEthTransfers(callback: (err: any, transfers: ICrossExchangeTr
 	else
 		setTimeout(() => getEthTransfers(callback), 20)
 }
-export function sendEthToken(transfer: ICrossExchangeTransfer)
+export function sendEthToken(transfer: ICrossExchangeTransfer): Promise<any>
 {
 	// mint ETH tokens
 	console.log(`\n\n-----TRANSFER ETH-----\n`)
@@ -112,15 +112,16 @@ export function sendEthToken(transfer: ICrossExchangeTransfer)
 	console.log(`\n----------------------\n\n`)
 	
 	if (!validator.validate(transfer.to, "ETH"))
-		return console.log(`incorrect ETH address! ${transfer.to}`)
+		return Promise.reject(`incorrect ETH address! ${transfer.to}`)
 	
 	// return
 	
 	let from = SENDER.address
 	let m = CONTRACT.methods.mint(transfer.to, Math.floor(transfer.amount * DUCAT_PRECISION))
-	m.send({
+	console.log(`sending ${m.encodeABI()}`)
+	return m.send({
 		from,
 		gas: 300000,
-		gasPrice: 5
-	}).then(x => console.log(x)).catch(err => console.error(err))
+		gasPrice: web3.utils.toWei('50', "gwei")
+	}).then(x => Promise.resolve(x))
 }

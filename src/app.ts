@@ -16,7 +16,7 @@ function _poll_()
 		eth: sendEthToken,
 		// neo: sendNeoToken,
 		eos: sendEosToken,
-	} as { [bc: string]: (tx: ICrossExchangeTransfer) => void }
+	} as { [bc: string]: (tx: ICrossExchangeTransfer) => Promise<any> }
 
 	Promise.all([
 		// ignoreError(promisify(getNeoTransfers), [], err => console.log(`neo transfers couldn't be loaded: ${err}`)),
@@ -29,21 +29,31 @@ function _poll_()
 		.then(transfers =>
 		{
 			// console.log(transfers)
-
-			transfers.forEach(tx =>
+			let bcTransfers = transfers.reduce((acc, tx) =>
 			{
 				if (isNaN(tx.amount) || tx.amount <= 0)
-					return console.error(`tx amount is <= 0!`), console.error(tx)
+					return console.error(`tx amount is <= 0!`), console.error(tx), acc
 
 				let toBlock = (tx.blockchainTo || "").toLowerCase()
-				let p = processors[toBlock]
-				if (!p)
-					return console.error(`no such target blockchain! ${tx.blockchainTo}`)
 				
-				processed[tx.tx] = true
-				return p(tx)
-			})
-			setTimeout(_poll_, 1000)
+				;(acc[toBlock] || (acc[toBlock] = [])).push(tx)
+				
+				return acc
+			}, {} as {[key: string]: ICrossExchangeTransfer[]})
+			
+			Promise.all(Object.keys(bcTransfers).map(bc =>
+			{
+				let m = processors[bc]
+				if (!m)
+					return console.error(`no such target blockchain! ${bc}`), Promise.resolve()
+				
+				let next = (cur: ICrossExchangeTransfer) => (console.log('next'), processed[cur.tx] = true, m(cur))
+				return bcTransfers[bc].reduce(
+					(prev, cur) => prev
+						.then(x => (console.log(`successfully sent tx#${x}`), next(cur)))
+						.catch(err => (console.error(err), next(cur))),
+					Promise.resolve()).then(x => console.log(`sent all ${bc.toUpperCase()}`))
+			})).then(x => (console.log('sent all transactions'), setTimeout(_poll_, 1000)))
 		})
 		.catch(err => console.error(err))
 }

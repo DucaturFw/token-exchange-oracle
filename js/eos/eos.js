@@ -53,8 +53,6 @@ function sendEosToken(transfer) {
         sign: true,
         broadcast: true,
     };
-    lib_1.callContract(config_1.default.eos.contract.addr, "transfer", args, extra).then(function (x) {
-        console.log(x);
-    }).catch(function (err) { return console.error(err); });
+    return lib_1.callContract(config_1.default.eos.contract.addr, "transfer", args, extra);
 }
 exports.sendEosToken = sendEosToken;

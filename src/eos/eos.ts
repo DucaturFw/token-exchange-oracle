@@ -71,7 +71,6 @@ interface IEosExchangeContract extends IEosContract
 	// void close(const uint64_t &id, const std::string &txid)
 	transfer(args: ITransferArgs): Promise<void>
 }
-
 export function sendEosToken(transfer: ICrossExchangeTransfer)
 {
 	// mint EOS tokens
@@ -93,8 +92,5 @@ export function sendEosToken(transfer: ICrossExchangeTransfer)
 		broadcast: true,
 	}
 
-	callContract<IEosExchangeContract, ITransferArgs>(appConfig.eos.contract.addr, "transfer", args, extra).then(x =>
-	{
-		console.log(x)
-	}).catch(err => console.error(err))
+	return callContract<IEosExchangeContract, ITransferArgs>(appConfig.eos.contract.addr, "transfer", args, extra)
 }
