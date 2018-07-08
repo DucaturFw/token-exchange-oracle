@@ -30,12 +30,13 @@ function getProcessed() {
         connection = conn;
         table = rethinkdb_1.default.db('oracle').table('sentTxs');
         return table.changes({ includeInitial: true }).run(conn).then(function (cursor) {
-            cursor.each(function (err, row) {
-                if (err)
-                    return console.error(err);
-                processed[row.new_val.txid] = true;
+            return new Promise(function (res, rej) {
+                cursor.each(function (err, row) {
+                    if (err)
+                        return console.error(err);
+                    processed[row.new_val.txid] = true;
+                }, function () { return res(processed); });
             });
-            return processed;
         });
     });
 }

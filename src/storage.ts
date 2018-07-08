@@ -30,14 +30,16 @@ export function getProcessed(): Promise<{ [tx: string]: boolean }>
 		table = r.db('oracle').table('sentTxs')
 		return table.changes({includeInitial: true}).run(conn).then(cursor =>
 		{
-			cursor.each<{ new_val: { txid: string } }>((err, row) =>
+			return new Promise<{ [tx: string]: boolean }>((res, rej) =>
 			{
-				if (err)
-					return console.error(err)
-				
-				processed[row.new_val.txid] = true
+				cursor.each<{ new_val: { txid: string } }>((err, row) =>
+				{
+					if (err)
+						return console.error(err)
+					
+					processed[row.new_val.txid] = true
+				}, () => res(processed))
 			})
-			return processed
 		})
 	})
 }
