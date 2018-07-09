@@ -55,6 +55,6 @@ function sendEosToken(transfer) {
         sign: true,
         broadcast: true,
     };
-    return lib_1.callContract(config_1.default.eos.contract.addr, "transfer", args, extra);
+    return lib_1.callContract(config_1.default.eos.contract.addr, "mint", args, extra);
 }
 exports.sendEosToken = sendEosToken;
