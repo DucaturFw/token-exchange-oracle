@@ -8,7 +8,7 @@ var config_1 = __importDefault(require("../config"));
 var CONTRACT_ADDR = config_1.default.eos.contract.addr;
 function parseAmount(amount) {
     var _a = amount.split(' '), value = _a[0], symbol = _a[1];
-    value = parseFloat(value);
+    value = parseFloat(value) / 10000;
     return {
         value: value,
         symbol: symbol

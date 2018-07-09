@@ -46,7 +46,7 @@ function eventToCXTransfer(event) {
     return {
         blockchainFrom: "eth",
         from: event.returnValues[0],
-        amount: parseFloat(event.returnValues[1]),
+        amount: parseFloat(event.returnValues[1]) / 1e18,
         blockchainTo: bcIdxToName(event.returnValues[2]),
         to: event.returnValues[3],
         tx: event.transactionHash
