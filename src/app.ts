@@ -9,7 +9,7 @@ console.log(`starting oracle...`)
 
 getProcessed().then(() =>
 {
-	console.log(`connected to Rethink, starting polling...`)
+	console.log(`connected to storage provider, starting polling...`)
 
 	_poll_()
 

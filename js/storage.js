@@ -27,9 +27,11 @@ var connection;
 var table;
 function getProcessed() {
     return rethinkdb_1.default.connect(config_1.default.rethink).then(function (conn) {
+        console.log('rethink: connected to db');
         connection = conn;
         table = rethinkdb_1.default.db('oracle').table('sentTxs');
         return table.changes({ includeInitial: true }).run(conn).then(function (cursor) {
+            console.log('rethink: connected to table changes');
             return new Promise(function (res, rej) {
                 cursor.each(function (err, row) {
                     if (err)

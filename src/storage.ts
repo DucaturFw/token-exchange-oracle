@@ -26,10 +26,14 @@ export function getProcessed(): Promise<{ [tx: string]: boolean }>
 {
 	return r.connect(appConfig.rethink).then(conn =>
 	{
+		console.log('rethink: connected to db')
+
 		connection = conn
 		table = r.db('oracle').table('sentTxs')
 		return table.changes({includeInitial: true}).run(conn).then(cursor =>
 		{
+			console.log('rethink: connected to table changes')
+
 			return new Promise<{ [tx: string]: boolean }>((res, rej) =>
 			{
 				cursor.each<{ new_val: { txid: string } }>((err, row) =>

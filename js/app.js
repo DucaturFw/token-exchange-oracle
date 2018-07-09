@@ -6,7 +6,7 @@ var eos_1 = require("./eos/eos");
 var storage_1 = require("./storage");
 console.log("starting oracle...");
 storage_1.getProcessed().then(function () {
-    console.log("connected to Rethink, starting polling...");
+    console.log("connected to storage provider, starting polling...");
     _poll_();
     function _poll_() {
         console.log("poll " + new Date().toISOString());
