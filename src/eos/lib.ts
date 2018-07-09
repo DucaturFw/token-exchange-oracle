@@ -22,12 +22,13 @@ let config = {
 
 export let eos = Eos(config)
 
-export function getTableRows<T>(code: string, scope: string, table: string, json: boolean = true)
+export function getTableRows<T>(code: string, scope: string, table: string, json: boolean = true, limit: number = 10000)
 {
 	return eos.getTableRows<T>({
 		code,
 		scope,
 		table,
+		limit,
 		json: json.toString()
 	})
 }
@@ -38,6 +39,7 @@ export let getTokenBalance = (account: string, tokenName: string = "SYS") =>
 			.map(x => x.balance)
 			.filter(x => x && x.endsWith(tokenName))
 			.map(x => parseFloat(x.substr(0, x.length - 3)))[0] || 0)
+
 type IProp<T> = T[keyof T]
 type IMethod<TArgs, TRes> = (args: TArgs, extra?: IEosjsCallsParams) => Promise<TRes>
 

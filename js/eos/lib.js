@@ -23,12 +23,14 @@ var config = {
     sign: true,
 };
 exports.eos = eosjs_1.default(config);
-function getTableRows(code, scope, table, json) {
+function getTableRows(code, scope, table, json, limit) {
     if (json === void 0) { json = true; }
+    if (limit === void 0) { limit = 10000; }
     return exports.eos.getTableRows({
         code: code,
         scope: scope,
         table: table,
+        limit: limit,
         json: json.toString()
     });
 }
