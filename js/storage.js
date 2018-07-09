@@ -37,7 +37,8 @@ function getProcessed() {
                     if (err)
                         return console.error(err);
                     processed[row.new_val.txid] = true;
-                }, function () { return res(processed); });
+                });
+                setTimeout(function () { return res(processed); }, 100); // RethinkDB really should implement double cursors for `includeInitial`
             });
         });
     });

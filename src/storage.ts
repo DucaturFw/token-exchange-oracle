@@ -42,7 +42,8 @@ export function getProcessed(): Promise<{ [tx: string]: boolean }>
 						return console.error(err)
 					
 					processed[row.new_val.txid] = true
-				}, () => res(processed))
+				})
+				setTimeout(() => res(processed), 100) // RethinkDB really should implement double cursors for `includeInitial`
 			})
 		})
 	})
