@@ -45,7 +45,7 @@ storage_1.getProcessed().then(function () {
                 return bcTransfers[bc].reduce(function (prev, cur) { return prev
                     .then(function (x) { return (console.log("successfully sent tx#" + x), next(cur)); })
                     .catch(function (err) { return (console.error(err), next(cur)); }); }, Promise.resolve()).then(function (x) { return console.log("sent all " + bc.toUpperCase()); });
-            })).then(function (x) { return (console.log('sent all transactions'), setTimeout(_poll_, 1000)); });
+            })).then(function (x) { return (console.log('sent all transactions'), setTimeout(_poll_, 5000)); });
         })
             .catch(function (err) { return console.error(err); });
     }

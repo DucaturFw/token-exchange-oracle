@@ -64,7 +64,7 @@ getProcessed().then(() =>
 							.then(x => (console.log(`successfully sent tx#${x}`), next(cur)))
 							.catch(err => (console.error(err), next(cur))),
 						Promise.resolve()).then(x => console.log(`sent all ${bc.toUpperCase()}`))
-				})).then(x => (console.log('sent all transactions'), setTimeout(_poll_, 1000)))
+				})).then(x => (console.log('sent all transactions'), setTimeout(_poll_, 5000)))
 			})
 			.catch(err => console.error(err))
 	}
