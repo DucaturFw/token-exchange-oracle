@@ -73,7 +73,7 @@ function eventToCXTransfer(event: IDBEvent<IExchangeReturn>): ICrossExchangeTran
 		from: event.returnValues[0],
 		amount: parseFloat(event.returnValues[1]) / 1e18,
 		blockchainTo: bcIdxToName(event.returnValues[2]),
-		to: event.returnValues[3],
+		to: web3.utils.hexToAscii(event.returnValues[3].replace(/(00)*$/gi, '')),
 		tx: event.transactionHash
 	}
 }
@@ -112,7 +112,7 @@ export function sendEthToken(transfer: ICrossExchangeTransfer): Promise<any>
 	if (!validator.validate(transfer.to, "ETH"))
 		return Promise.reject(`incorrect ETH address! ${transfer.to}`)
 	
-	// return
+	// return Promise.resolve()
 	
 	let from = SENDER.address
 	let m = CONTRACT.methods.mint(transfer.to, Math.floor(transfer.amount))

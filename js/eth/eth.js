@@ -47,7 +47,7 @@ function eventToCXTransfer(event) {
         from: event.returnValues[0],
         amount: parseFloat(event.returnValues[1]) / 1e18,
         blockchainTo: bcIdxToName(event.returnValues[2]),
-        to: event.returnValues[3],
+        to: web3.utils.hexToAscii(event.returnValues[3].replace(/(00)*$/gi, '')),
         tx: event.transactionHash
     };
 }
@@ -79,7 +79,7 @@ function sendEthToken(transfer) {
     console.log("\n----------------------\n\n");
     if (!wallet_address_validator_1.default.validate(transfer.to, "ETH"))
         return Promise.reject("incorrect ETH address! " + transfer.to);
-    // return
+    // return Promise.resolve()
     var from = SENDER.address;
     var m = CONTRACT.methods.mint(transfer.to, Math.floor(transfer.amount));
     console.log("sending " + m.encodeABI());
