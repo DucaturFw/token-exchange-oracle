@@ -6,8 +6,6 @@ import validator from "wallet-address-validator"
 
 const ETH_ABI = require('../../data/ducatur-eth.abi.json')
 
-const DUCAT_PRECISION = 1e4
-
 let web3: Web3
 let CONTRACT: Contract
 let SENDER: Account
@@ -117,7 +115,7 @@ export function sendEthToken(transfer: ICrossExchangeTransfer): Promise<any>
 	// return
 	
 	let from = SENDER.address
-	let m = CONTRACT.methods.mint(transfer.to, Math.floor(transfer.amount * DUCAT_PRECISION))
+	let m = CONTRACT.methods.mint(transfer.to, Math.floor(transfer.amount))
 	console.log(`sending ${m.encodeABI()}`)
 	return m.send({
 		from,

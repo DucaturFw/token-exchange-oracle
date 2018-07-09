@@ -8,7 +8,6 @@ var config_1 = __importDefault(require("../config"));
 var rethinkdb_1 = __importDefault(require("rethinkdb"));
 var wallet_address_validator_1 = __importDefault(require("wallet-address-validator"));
 var ETH_ABI = require('../../data/ducatur-eth.abi.json');
-var DUCAT_PRECISION = 1e4;
 var web3;
 var CONTRACT;
 var SENDER;
@@ -82,7 +81,7 @@ function sendEthToken(transfer) {
         return Promise.reject("incorrect ETH address! " + transfer.to);
     // return
     var from = SENDER.address;
-    var m = CONTRACT.methods.mint(transfer.to, Math.floor(transfer.amount * DUCAT_PRECISION));
+    var m = CONTRACT.methods.mint(transfer.to, Math.floor(transfer.amount));
     console.log("sending " + m.encodeABI());
     return m.send({
         from: from,

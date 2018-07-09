@@ -19,7 +19,7 @@ let CONTRACT_ADDR = appConfig.eos.contract.addr
 export function parseAmount(amount: string): { value: number, symbol: string }
 {
 	let [value, symbol] = amount.split(' ') as [any, string]
-	value = parseFloat(value as any) / 10000
+	value = parseFloat(value as any)
 	return {
 		value,
 		symbol
