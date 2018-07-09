@@ -66,7 +66,7 @@ interface IDBEvent<IReturnValues> extends EventLog
 	signature: string
 }
 
-function eventToCXTransfer(event: IDBEvent<IExchangeReturn>): ICrossExchangeTransfer
+export function eventToCXTransfer(event: IDBEvent<IExchangeReturn>): ICrossExchangeTransfer
 {
 	return {
 		blockchainFrom: "eth",

@@ -51,6 +51,7 @@ function eventToCXTransfer(event) {
         tx: event.transactionHash
     };
 }
+exports.eventToCXTransfer = eventToCXTransfer;
 function bcIdxToName(idx) {
     idx = idx + "";
     var map = {
