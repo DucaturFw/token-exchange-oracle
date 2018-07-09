@@ -41,7 +41,9 @@ function sendEosToken(transfer) {
     console.log("\n\n-----TRANSFER EOS-----\n");
     console.log(transfer);
     console.log("\n----------------------\n\n");
-    // return
+    if (!/^([a-z1-9\.]?){12}$/g.test(transfer.to))
+        return Promise.reject("incorrect EOS address! " + transfer.to);
+    // return Promise.resolve()
     var args = {
         to: transfer.to,
         token_master: config_1.default.eos.contract.owner,

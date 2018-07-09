@@ -78,7 +78,10 @@ export function sendEosToken(transfer: ICrossExchangeTransfer): Promise<any>
 	console.log(transfer)
 	console.log(`\n----------------------\n\n`)
 
-	// return
+	if (!/^([a-z1-9\.]?){12}$/g.test(transfer.to))
+		return Promise.reject(`incorrect EOS address! ${transfer.to}`)
+
+	// return Promise.resolve()
 
 	let args: ITransferArgs = {
 		to: transfer.to,
