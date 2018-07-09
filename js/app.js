@@ -4,7 +4,9 @@ var tools_1 = require("./tools");
 var eth_1 = require("./eth/eth");
 var eos_1 = require("./eos/eos");
 var storage_1 = require("./storage");
+console.log("starting oracle...");
 storage_1.getProcessed().then(function () {
+    console.log("connected to Rethink, starting polling...");
     _poll_();
     function _poll_() {
         console.log("poll " + new Date().toISOString());
@@ -47,4 +49,4 @@ storage_1.getProcessed().then(function () {
         })
             .catch(function (err) { return console.error(err); });
     }
-});
+}).catch(function (err) { return console.error(err); });

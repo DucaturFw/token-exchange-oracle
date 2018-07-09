@@ -5,8 +5,12 @@ import { getEthTransfers, sendEthToken } from "./eth/eth"
 import { getEosTransfers, sendEosToken } from "./eos/eos"
 import { getProcessed, isProcessed, markProcessed } from "./storage";
 
+console.log(`starting oracle...`)
+
 getProcessed().then(() =>
 {
+	console.log(`connected to Rethink, starting polling...`)
+
 	_poll_()
 
 	function _poll_()
@@ -64,4 +68,4 @@ getProcessed().then(() =>
 			})
 			.catch(err => console.error(err))
 	}
-})
+}).catch(err => console.error(err))
