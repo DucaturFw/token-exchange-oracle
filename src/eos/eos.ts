@@ -86,7 +86,7 @@ export function sendEosToken(transfer: ICrossExchangeTransfer): Promise<any>
 	let args: ITransferArgs = {
 		to: transfer.to,
 		token_master: appConfig.eos.contract.owner,
-		quantity: `${transfer.amount.toFixed(4)} DUC`,
+		quantity: `${transfer.amount.toFixed(4)} ${appConfig.eos.defaults.symbol}`,
 		memo: transfer.tx
 	}
 	let extra = {
@@ -94,6 +94,7 @@ export function sendEosToken(transfer: ICrossExchangeTransfer): Promise<any>
 		sign: true,
 		broadcast: true,
 	}
+	// console.log(args)
 
 	return callContract<IEosExchangeContract, ITransferArgs>(appConfig.eos.contract.addr, "mint", args, extra)
 }

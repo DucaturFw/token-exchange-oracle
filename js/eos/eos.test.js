@@ -22,7 +22,7 @@ describe('getEosTransfers with mocked getTableRows', function () {
                 id: 0,
                 from: 'tester2',
                 to: '0x12345678',
-                amount: '50.0000 DUC',
+                amount: '50.0000 DUCAT',
                 blockchain: 'eth',
                 pubtime: '2018-06-19T17:05:34',
                 txid: '',

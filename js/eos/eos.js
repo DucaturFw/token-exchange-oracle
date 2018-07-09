@@ -47,7 +47,7 @@ function sendEosToken(transfer) {
     var args = {
         to: transfer.to,
         token_master: config_1.default.eos.contract.owner,
-        quantity: transfer.amount.toFixed(4) + " DUC",
+        quantity: transfer.amount.toFixed(4) + " " + config_1.default.eos.defaults.symbol,
         memo: transfer.tx
     };
     var extra = {
@@ -55,6 +55,7 @@ function sendEosToken(transfer) {
         sign: true,
         broadcast: true,
     };
+    // console.log(args)
     return lib_1.callContract(config_1.default.eos.contract.addr, "mint", args, extra);
 }
 exports.sendEosToken = sendEosToken;

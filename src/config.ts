@@ -10,6 +10,7 @@ export default require('../data/config.json') as {
 		}
 		defaults: {
 			eosio_token: string
+			symbol: string
 		}
 	}
 	eth: {
