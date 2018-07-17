@@ -1,4 +1,4 @@
-import { disassemble, IEntry } from "./neo-disassemble"
+import { disassemble } from "neo-script-parser"
 import { u as neon_u, wallet } from "@cityofzion/neon-js"
 
 export const HALT_BREAK = "HALT, BREAK"

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var neo_disassemble_1 = require("./neo-disassemble");
+var neo_script_parser_1 = require("neo-script-parser");
 var neon_js_1 = require("@cityofzion/neon-js");
 exports.HALT_BREAK = "HALT, BREAK";
 exports.VM_TYPES = {
@@ -65,7 +65,7 @@ function parseAnyCall(method) {
 }
 exports.parseAnyCall = parseAnyCall;
 function parseContractCall(script) {
-    var asm = neo_disassemble_1.disassemble(script);
+    var asm = neo_script_parser_1.disassemble(script);
     // console.log(asm)
     var e = asm.pop();
     if (!e)
