@@ -18,6 +18,7 @@
     "@types/rethinkdb": "^2.3.11",
     "@types/superagent": "^3.8.1",
     "@types/web3": "^1.0.0",
+    "jest": "^23.1.0",
     "jest-extended": "^0.7.2"
   }
 }
