@@ -64,17 +64,18 @@ function sendNeoToken(transfer) {
     var neoscan = config_1.default.neo.apiUrl + "/api/main_net";
     var ctrHash = config_1.default.neo.contract.hash;
     var makeScript = tools_1.toScriptString(ctrHash);
-    var callContract = tools_1.ctrInvoker(ctrHash, config_1.default.neo.rpc);
+    // let callContract = ctrInvoker(ctrHash, appConfig.neo.rpc)
     var to = neon_js_1.default.create.account(transfer.to);
     console.log(transfer.to);
     console.log(to.scriptHash);
-    callContract = function (op) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        return tools_1.invoke(tools_1.signRawTx(config_1.default.neo.contract.owner_pk, makeScript(op, args)).serialize(true), config_1.default.neo.rpc);
-    };
+    /* callContract = (op: string, ...args: any[]) =>
+        invoke(
+            signRawTx(
+                appConfig.neo.contract.owner_pk,
+                makeScript(op, args)
+            ).serialize(true),
+            appConfig.neo.rpc
+        ) */
     function sendTx(script) {
         return neon_js_1.default.doInvoke({
             net: neoscan,

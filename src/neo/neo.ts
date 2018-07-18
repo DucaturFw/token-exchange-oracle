@@ -71,18 +71,18 @@ export function sendNeoToken(transfer: ICrossExchangeTransfer)
 	let ctrHash = appConfig.neo.contract.hash
 
 	let makeScript = toScriptString(ctrHash)
-	let callContract = ctrInvoker(ctrHash, appConfig.neo.rpc)
+	// let callContract = ctrInvoker(ctrHash, appConfig.neo.rpc)
 	let to = Neon.create.account(transfer.to)
 	console.log(transfer.to)
 	console.log(to.scriptHash)
-	callContract = (op: string, ...args: any[]) =>
+	/* callContract = (op: string, ...args: any[]) =>
 		invoke(
 			signRawTx(
 				appConfig.neo.contract.owner_pk,
 				makeScript(op, args)
 			).serialize(true),
 			appConfig.neo.rpc
-		)
+		) */
 	function sendTx(script: string)
 	{
 		return Neon.doInvoke({
